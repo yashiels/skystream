@@ -14,12 +14,8 @@ const streamingServices = {
   })),
   getMovieUrl: jest.fn(id => `${BASE}/movie/${id}`),
   getVideasyMovieUrl: jest.fn(id => `${BASE}/movie/${id}`),
-  getTVUrl: jest.fn(
-    (id, season, episode) => `${BASE}/tv/${id}/${season}/${episode}`
-  ),
-  getVideasyTVUrl: jest.fn(
-    (id, season, episode) => `${BASE}/tv/${id}/${season}/${episode}`
-  ),
+  getTVUrl: jest.fn((id, season, episode) => `${BASE}/tv/${id}/${season}/${episode}`),
+  getVideasyTVUrl: jest.fn((id, season, episode) => `${BASE}/tv/${id}/${season}/${episode}`),
 };
 
 export default streamingServices;

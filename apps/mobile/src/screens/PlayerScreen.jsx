@@ -21,12 +21,12 @@ const _videasyHost = PLAYER_DEFAULTS.videasyBaseUrl.replace(/^https?:\/\//, '');
 const _videasyRoot = _videasyHost.split('.').slice(-2).join('.'); // e.g. 'videasy.to'
 
 const ALLOWED_DOMAINS = [
-  _videasyHost,              // 'player.videasy.to'
-  `www.${_videasyRoot}`,     // 'www.videasy.to'
-  _videasyRoot,              // 'videasy.to'
-  'player.videasy.net',      // legacy compat
-  'www.videasy.net',         // legacy compat
-  'videasy.net',             // legacy compat
+  _videasyHost, // 'player.videasy.to'
+  `www.${_videasyRoot}`, // 'www.videasy.to'
+  _videasyRoot, // 'videasy.to'
+  'player.videasy.net', // legacy compat
+  'www.videasy.net', // legacy compat
+  'videasy.net', // legacy compat
   'fonts.googleapis.com',
   'fonts.gstatic.com',
   'cdn.jsdelivr.net',
