@@ -4,10 +4,12 @@
  * Docs: https://www.videasy.to/docs
  */
 
-class StreamingServices {
-  videasyDomain = 'https://player.videasy.to';
+import { PLAYER_DEFAULTS } from '@skystream/shared';
 
-  constructor() {}
+class StreamingServices {
+  constructor() {
+    this.videasyDomain = PLAYER_DEFAULTS.videasyBaseUrl;
+  }
 
   /**
    * Generate Videasy embed URL for movies

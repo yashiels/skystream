@@ -13,15 +13,20 @@ import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { streamingServices } from '@skystream/api';
+import { PLAYER_DEFAULTS } from '@skystream/shared';
 import { spacing, fontSize, borderRadius } from '../theme';
 
+// Derive videasy domains from the single source of truth in @skystream/shared
+const _videasyHost = PLAYER_DEFAULTS.videasyBaseUrl.replace(/^https?:\/\//, ''); // e.g. 'player.videasy.to'
+const _videasyRoot = _videasyHost.split('.').slice(-2).join('.'); // e.g. 'videasy.to'
+
 const ALLOWED_DOMAINS = [
-  'player.videasy.to',
-  'www.videasy.to',
-  'videasy.to',
-  'player.videasy.net',
-  'www.videasy.net',
-  'videasy.net',
+  _videasyHost,              // 'player.videasy.to'
+  `www.${_videasyRoot}`,     // 'www.videasy.to'
+  _videasyRoot,              // 'videasy.to'
+  'player.videasy.net',      // legacy compat
+  'www.videasy.net',         // legacy compat
+  'videasy.net',             // legacy compat
   'fonts.googleapis.com',
   'fonts.gstatic.com',
   'cdn.jsdelivr.net',
