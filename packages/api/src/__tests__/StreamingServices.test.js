@@ -1,10 +1,13 @@
 import streamingServices from '../streaming/StreamingServices.js';
+import { PLAYER_DEFAULTS } from '@skystream/shared';
+
+const BASE = PLAYER_DEFAULTS.videasyBaseUrl;
 
 describe('StreamingServices (Videasy)', () => {
   describe('getMovieUrl', () => {
     it('generates a movie URL with default options', () => {
       const url = streamingServices.getMovieUrl(550);
-      expect(url).toContain('player.videasy.net/movie/550');
+      expect(url).toContain(`${BASE}/movie/550`);
       expect(url).toContain('color=e50914');
       expect(url).toContain('overlay=true');
     });
@@ -19,7 +22,7 @@ describe('StreamingServices (Videasy)', () => {
   describe('getTVUrl', () => {
     it('generates a TV URL with season and episode', () => {
       const url = streamingServices.getTVUrl(1399, 2, 5);
-      expect(url).toContain('player.videasy.net/tv/1399/2/5');
+      expect(url).toContain(`${BASE}/tv/1399/2/5`);
       expect(url).toContain('nextEpisode=true');
       expect(url).toContain('episodeSelector=true');
       expect(url).toContain('autoplayNextEpisode=true');
@@ -34,7 +37,7 @@ describe('StreamingServices (Videasy)', () => {
   describe('getAnimeUrl', () => {
     it('generates an anime URL with episode', () => {
       const url = streamingServices.getAnimeUrl(21, 5);
-      expect(url).toContain('player.videasy.net/anime/21/5');
+      expect(url).toContain(`${BASE}/anime/21/5`);
     });
 
     it('supports dub option', () => {
@@ -44,7 +47,7 @@ describe('StreamingServices (Videasy)', () => {
 
     it('generates anime movie URL (no episode)', () => {
       const url = streamingServices.getAnimeUrl(145139, 0);
-      expect(url).toContain('player.videasy.net/anime/145139');
+      expect(url).toContain(`${BASE}/anime/145139`);
       expect(url).not.toContain('/0');
     });
   });
@@ -73,7 +76,7 @@ describe('StreamingServices (Videasy)', () => {
     it('returns Videasy URL with legacy aliases for a movie', () => {
       const urls = streamingServices.getAllStreamingUrls({ id: 550, type: 'movie' });
 
-      expect(urls.server1).toContain('player.videasy.net/movie/550');
+      expect(urls.server1).toContain(`${BASE}/movie/550`);
       expect(urls.videasy).toBe(urls.server1);
       expect(urls.vidsrc).toBe(urls.server1);
     });

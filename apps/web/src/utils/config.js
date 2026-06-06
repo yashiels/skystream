@@ -7,6 +7,8 @@
  * Every env var must be referenced as process.env.NEXT_PUBLIC_XXX directly.
  */
 
+import { PLAYER_DEFAULTS } from '@skystream/shared';
+
 // Application Configuration
 export const APP_CONFIG = {
   name: process.env.NEXT_PUBLIC_APP_NAME || 'SkyStream',
@@ -40,7 +42,7 @@ if (typeof window === 'undefined' && !API_CONFIG.tmdb.apiKey) {
 // Video Player Configuration
 export const PLAYER_CONFIG = {
   videasy: {
-    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || 'https://player.videasy.net',
+    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || PLAYER_DEFAULTS.videasyBaseUrl,
   },
   defaults: {
     player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'videasy',

@@ -11,5 +11,8 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest"
+  },
+  "dependencies": {
+    "@skystream/shared": "workspace:*"
   }
 }

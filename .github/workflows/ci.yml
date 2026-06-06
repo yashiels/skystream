@@ -1,25 +1,20 @@
-name: Web Build
+name: CI
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/build.yml'
   pull_request:
     types: [opened, synchronize, reopened]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Web - Lint, Test & Build
-    runs-on: [self-hosted, Linux, X64, astra]
-    timeout-minutes: 15
+  ci:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
 
     steps:
@@ -33,20 +28,25 @@ jobs:
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store/v10
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm --filter web lint
 
       - name: Format check
         run: pnpm format:check
 
-      - name: Test packages
-        run: pnpm test:packages
+      - name: Lint
+        run: pnpm lint
 
-      - name: Test web
-        run: pnpm --filter web test
+      - name: Test
+        run: pnpm test
 
       - name: Build web
-        run: pnpm --filter web build
+        if: github.event_name == 'push' || !cancelled()
+        run: pnpm build:web

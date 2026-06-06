@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
+import { PLAYER_DEFAULTS } from '@skystream/shared';
+
 const isDev = process.env.NODE_ENV === 'development';
+// Derive the player origin from the single source of truth.
+// Legacy .net origin kept for backwards compat with older embeds.
+const videasyOrigin = new URL(PLAYER_DEFAULTS.videasyBaseUrl).origin;
 
 const nextConfig = {
   // Inline public env vars at build time with sensible defaults.
@@ -44,7 +49,7 @@ const nextConfig = {
               "manifest-src 'self'",
               "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live",
               "connect-src 'self' https:",
-              "frame-src 'self' https://player.videasy.net",
+              `frame-src 'self' ${videasyOrigin} https://player.videasy.net`,
               "img-src 'self' data: https: blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",

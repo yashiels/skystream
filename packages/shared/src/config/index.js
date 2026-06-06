@@ -12,7 +12,7 @@ export const TMDB_DEFAULTS = {
 };
 
 export const PLAYER_DEFAULTS = {
-  videasyBaseUrl: 'https://player.videasy.net',
+  videasyBaseUrl: 'https://player.videasy.to',
   defaultPlayer: 'videasy',
   defaultColor: 'e50914',
   autoPlay: true,

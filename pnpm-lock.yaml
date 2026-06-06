@@ -197,7 +197,11 @@ importers:
         specifier: ^3.8.3
         version: 3.8.3
 
-  packages/api: {}
+  packages/api:
+    dependencies:
+      '@skystream/shared':
+        specifier: workspace:*
+        version: link:../shared
 
   packages/shared: {}
 

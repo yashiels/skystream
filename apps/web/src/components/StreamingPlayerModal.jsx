@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { X, ExternalLink } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
-import { generateMovieUrl, generateTVUrl } from '@skystream/shared';
+import { generateMovieUrl, generateTVUrl, PLAYER_DEFAULTS } from '@skystream/shared';
 import { updateBrowserUrl } from '../utils/urlRouting';
 
 import './StreamingPlayerModal.css';
@@ -126,7 +126,8 @@ const StreamingPlayerModal = ({
 
     // Listen for postMessage from iframe about navigation
     const handleMessage = event => {
-      const allowedOrigins = ['https://player.videasy.net', window.location.origin];
+      const videasyOrigin = new URL(PLAYER_DEFAULTS.videasyBaseUrl).origin;
+      const allowedOrigins = [videasyOrigin, 'https://player.videasy.net', window.location.origin];
       if (!allowedOrigins.some(o => event.origin === o)) return;
 
       if (event.data && event.data.type === 'episodeChange') {
