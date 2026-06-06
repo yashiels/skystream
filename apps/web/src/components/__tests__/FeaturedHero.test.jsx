@@ -42,7 +42,7 @@ describe('FeaturedHero', () => {
       server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
       server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
       server4: 'https://vsrc.su/embed/movie?tmdb=1',
-      server5: 'https://player.videasy.to/embed/movie?tmdb=1',
+      server5: `${require('@skystream/shared').PLAYER_DEFAULTS.videasyBaseUrl}/embed/movie?tmdb=1`,
     }));
     // Suppress act() warnings for this test suite - the component's setInterval
     // will naturally cause act() warnings in tests, which is expected behavior
