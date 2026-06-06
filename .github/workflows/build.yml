@@ -18,7 +18,7 @@ concurrency:
 jobs:
   build:
     name: Web - Lint, Test & Build
-    runs-on: [self-hosted, Linux, X64, astra]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
 
