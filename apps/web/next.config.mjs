@@ -44,7 +44,7 @@ const nextConfig = {
               "manifest-src 'self'",
               "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live",
               "connect-src 'self' https:",
-              "frame-src 'self' https://player.videasy.net",
+              "frame-src 'self' https://player.videasy.to https://player.videasy.net",
               "img-src 'self' data: https: blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",

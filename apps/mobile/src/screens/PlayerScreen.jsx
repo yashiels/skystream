@@ -16,6 +16,9 @@ import { streamingServices } from '@skystream/api';
 import { spacing, fontSize, borderRadius } from '../theme';
 
 const ALLOWED_DOMAINS = [
+  'player.videasy.to',
+  'www.videasy.to',
+  'videasy.to',
   'player.videasy.net',
   'www.videasy.net',
   'videasy.net',

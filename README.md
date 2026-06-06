@@ -173,5 +173,5 @@ Built by [Skyner Group](https://github.com/skynergroup) —
 [Mpho Ndlela](https://github.com/MphoCodes).
 
 Powered by [TMDB](https://www.themoviedb.org/),
-[Videasy](https://player.videasy.net/), [Vidsrc](https://vidsrc.xyz/), and
+[Videasy](https://player.videasy.to/), [Vidsrc](https://vidsrc.xyz/), and
 [Vercel](https://vercel.com/).

@@ -40,7 +40,7 @@ if (typeof window === 'undefined' && !API_CONFIG.tmdb.apiKey) {
 // Video Player Configuration
 export const PLAYER_CONFIG = {
   videasy: {
-    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || 'https://player.videasy.net',
+    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || 'https://player.videasy.to',
   },
   defaults: {
     player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'videasy',

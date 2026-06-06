@@ -1,11 +1,11 @@
 /**
  * Streaming Services API
  * Handles embed URL generation for Videasy player
- * Docs: https://www.videasy.net/docs
+ * Docs: https://www.videasy.to/docs
  */
 
 class StreamingServices {
-  videasyDomain = 'https://player.videasy.net';
+  videasyDomain = 'https://player.videasy.to';
 
   constructor() {}
 
