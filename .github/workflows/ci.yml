@@ -29,7 +29,7 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
 
       - name: Cache pnpm store
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.local/share/pnpm/store/v10
           key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
