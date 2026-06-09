@@ -133,7 +133,7 @@ const StreamingPlayerModal = ({
       if (!allowedOrigins.some(o => event.origin === o)) return;
 
       // Update episode state whenever VidLink reports a new season/episode
-      if (event.data && event.data.season && event.data.episode) {
+      if (event.data && event.data.season != null && event.data.episode != null) {
         const { season: newSeason, episode: newEpisode } = event.data;
         const seasonNum = Number.parseInt(newSeason, 10);
         const episodeNum = Number.parseInt(newEpisode, 10);

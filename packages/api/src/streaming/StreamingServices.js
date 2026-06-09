@@ -27,7 +27,7 @@ class StreamingServices {
     const params = new URLSearchParams();
     if (resolvedColor) params.append('primaryColor', resolvedColor);
     if (progress) params.append('progress', progress);
-    params.append('autoplay', autoplay ? 'true' : String(autoplay));
+    if (autoplay) params.append('autoplay', 'true');
     params.append('poster', 'true');
     params.append('title', 'true');
 
@@ -61,7 +61,7 @@ class StreamingServices {
     if (resolvedColor) params.append('primaryColor', resolvedColor);
     if (progress) params.append('progress', progress);
     if (resolvedNextbutton) params.append('nextbutton', 'true');
-    params.append('autoplay', autoplay ? 'true' : String(autoplay));
+    if (autoplay) params.append('autoplay', 'true');
     params.append('poster', 'true');
     params.append('title', 'true');
 
@@ -86,8 +86,9 @@ class StreamingServices {
     const audioTrack = subOrDub || (dub ? 'dub' : 'sub');
 
     let url = `${this.playerDomain}/anime/${malId}`;
-    if (episode > 0) url += `/${episode}`;
-    url += `/${audioTrack}`;
+    if (episode > 0) {
+      url += `/${episode}/${audioTrack}`;
+    }
 
     return url;
   }

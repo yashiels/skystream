@@ -69,12 +69,11 @@ describe('StreamingServices (VidLink)', () => {
       expect(url).toContain('/dub');
     });
 
-    it('generates anime movie URL (no episode)', () => {
+    it('generates anime movie URL (no episode, no audio track)', () => {
       const url = streamingServices.getAnimeUrl(145139, 0);
-      expect(url).toContain(`${BASE}/anime/145139`);
+      expect(url).toBe(`${BASE}/anime/145139`);
       expect(url).not.toContain('/0');
-      // Sub/dub segment still present
-      expect(url).toMatch(/\/(sub|dub)$/);
+      expect(url).not.toMatch(/\/(sub|dub)/);
     });
   });
 
