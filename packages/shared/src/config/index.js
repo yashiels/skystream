@@ -12,8 +12,10 @@ export const TMDB_DEFAULTS = {
 };
 
 export const PLAYER_DEFAULTS = {
-  videasyBaseUrl: 'https://player.videasy.to',
-  defaultPlayer: 'videasy',
+  playerBaseUrl: 'https://vidlink.pro',
+  // Backward-compat alias — consumers that still reference videasyBaseUrl keep working
+  videasyBaseUrl: 'https://vidlink.pro',
+  defaultPlayer: 'vidlink',
   defaultColor: 'e50914',
   autoPlay: true,
   language: 'en',

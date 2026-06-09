@@ -8,8 +8,8 @@ import { updateBrowserUrl } from '../utils/urlRouting';
 
 import './StreamingPlayerModal.css';
 
-// Single player — Videasy handles all streaming
-const DEFAULT_SERVER = 'videasy';
+// Single player — VidLink handles all streaming
+const DEFAULT_SERVER = 'vidlink';
 
 const StreamingPlayerModal = ({
   isOpen,
@@ -124,22 +124,23 @@ const StreamingPlayerModal = ({
   useEffect(() => {
     if (!isOpen || contentType !== 'tv') return;
 
-    // Listen for postMessage from iframe about navigation
+    // Listen for postMessage from iframe about navigation.
+    // VidLink sends progress events shaped as:
+    //   { id, type, progress, timestamp, duration, season, episode }
     const handleMessage = event => {
-      const videasyOrigin = new URL(PLAYER_DEFAULTS.videasyBaseUrl).origin;
-      const allowedOrigins = [videasyOrigin, 'https://player.videasy.net', window.location.origin];
+      const vidlinkOrigin = new URL(PLAYER_DEFAULTS.playerBaseUrl).origin;
+      const allowedOrigins = [vidlinkOrigin, window.location.origin];
       if (!allowedOrigins.some(o => event.origin === o)) return;
 
-      if (event.data && event.data.type === 'episodeChange') {
+      // Update episode state whenever VidLink reports a new season/episode
+      if (event.data && event.data.season && event.data.episode) {
         const { season: newSeason, episode: newEpisode } = event.data;
-        if (newSeason && newEpisode) {
-          const seasonNum = Number.parseInt(newSeason, 10);
-          const episodeNum = Number.parseInt(newEpisode, 10);
+        const seasonNum = Number.parseInt(newSeason, 10);
+        const episodeNum = Number.parseInt(newEpisode, 10);
 
-          if (seasonNum !== selectedSeason || episodeNum !== selectedEpisode) {
-            setSelectedSeason(seasonNum);
-            setSelectedEpisode(episodeNum);
-          }
+        if (seasonNum !== selectedSeason || episodeNum !== selectedEpisode) {
+          setSelectedSeason(seasonNum);
+          setSelectedEpisode(episodeNum);
         }
       }
     };
@@ -287,7 +288,7 @@ const StreamingPlayerModal = ({
         <div className="streaming-player-modal__player">
           <iframe
             src={currentEmbedUrl}
-            title={`${content?.title} - Videasy`}
+            title={`${content?.title} - VidLink`}
             className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
             allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
@@ -314,7 +315,7 @@ StreamingPlayerModal.propTypes = {
     id: PropTypes.number.isRequired,
     title: PropTypes.string,
   }),
-  platform: PropTypes.oneOf(['server1', 'server2', 'server3', 'videasy']),
+  platform: PropTypes.oneOf(['server1', 'server2', 'server3', 'vidlink', 'videasy']),
   embedUrl: PropTypes.string,
   contentType: PropTypes.oneOf(['movie', 'tv']),
   season: PropTypes.number,

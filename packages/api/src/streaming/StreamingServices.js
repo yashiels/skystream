@@ -1,29 +1,35 @@
 /**
  * Streaming Services API
- * Handles embed URL generation for Videasy player
- * Docs: https://www.videasy.to/docs
+ * Handles embed URL generation for VidLink.pro player
+ * Docs: https://vidlink.pro
  */
 
 import { PLAYER_DEFAULTS } from '@skystream/shared';
 
 class StreamingServices {
   constructor() {
-    this.videasyDomain = PLAYER_DEFAULTS.videasyBaseUrl;
+    this.playerDomain = PLAYER_DEFAULTS.playerBaseUrl;
+    // Backward-compat alias
+    this.videasyDomain = this.playerDomain;
   }
 
   /**
-   * Generate Videasy embed URL for movies
+   * Generate VidLink embed URL for movies
+   * https://vidlink.pro/movie/{tmdbId}?primaryColor=e50914&autoplay=true&poster=true&title=true
    */
   getMovieUrl(tmdbId, options = {}) {
-    const { color = 'e50914', progress, overlay = true, autoplay = 1 } = options;
+    const { primaryColor, color = 'e50914', progress, autoplay = true } = options;
+    // Support legacy 'color' param — primaryColor takes precedence
+    const resolvedColor = primaryColor || color;
 
-    let url = `${this.videasyDomain}/movie/${tmdbId}`;
+    let url = `${this.playerDomain}/movie/${tmdbId}`;
 
     const params = new URLSearchParams();
-    if (color) params.append('color', color);
+    if (resolvedColor) params.append('primaryColor', resolvedColor);
     if (progress) params.append('progress', progress);
-    if (overlay) params.append('overlay', 'true');
-    if (autoplay !== undefined) params.append('autoplay', autoplay);
+    params.append('autoplay', autoplay ? 'true' : String(autoplay));
+    params.append('poster', 'true');
+    params.append('title', 'true');
 
     const queryString = params.toString();
     if (queryString) url += `?${queryString}`;
@@ -32,27 +38,32 @@ class StreamingServices {
   }
 
   /**
-   * Generate Videasy embed URL for TV shows
+   * Generate VidLink embed URL for TV shows
+   * https://vidlink.pro/tv/{tmdbId}/{season}/{episode}?primaryColor=e50914&nextbutton=true&autoplay=true&poster=true&title=true
    */
   getTVUrl(tmdbId, season = 1, episode = 1, options = {}) {
     const {
+      primaryColor,
       color = 'e50914',
       progress,
+      // 'nextEpisode' is the legacy Videasy param; 'nextbutton' is the VidLink param.
+      // nextbutton takes precedence; nextEpisode falls back for callers that haven't migrated yet.
       nextEpisode = true,
-      episodeSelector = true,
-      autoplayNextEpisode = true,
-      overlay = true,
+      nextbutton,
+      autoplay = true,
     } = options;
+    const resolvedColor = primaryColor || color;
+    const resolvedNextbutton = nextbutton !== undefined ? nextbutton : nextEpisode;
 
-    let url = `${this.videasyDomain}/tv/${tmdbId}/${season}/${episode}`;
+    let url = `${this.playerDomain}/tv/${tmdbId}/${season}/${episode}`;
 
     const params = new URLSearchParams();
-    if (color) params.append('color', color);
+    if (resolvedColor) params.append('primaryColor', resolvedColor);
     if (progress) params.append('progress', progress);
-    if (nextEpisode) params.append('nextEpisode', 'true');
-    if (episodeSelector) params.append('episodeSelector', 'true');
-    if (autoplayNextEpisode) params.append('autoplayNextEpisode', 'true');
-    if (overlay) params.append('overlay', 'true');
+    if (resolvedNextbutton) params.append('nextbutton', 'true');
+    params.append('autoplay', autoplay ? 'true' : String(autoplay));
+    params.append('poster', 'true');
+    params.append('title', 'true');
 
     const queryString = params.toString();
     if (queryString) url += `?${queryString}`;
@@ -61,33 +72,22 @@ class StreamingServices {
   }
 
   /**
-   * Generate Videasy embed URL for anime
+   * Generate VidLink embed URL for anime
+   * https://vidlink.pro/anime/{MALid}/{number}/{subOrDub}
+   *
+   * @param {number} malId  - MyAnimeList ID
+   * @param {number} episode - Episode number (0 = anime movie, omits episode segment)
+   * @param {object} options
+   * @param {boolean} [options.dub=false]   - Backward-compat: true maps to 'dub', false to 'sub'
+   * @param {string}  [options.subOrDub]    - Explicit 'sub' | 'dub' override (takes precedence)
    */
-  getAnimeUrl(anilistId, episode = 1, options = {}) {
-    const {
-      dub = false,
-      color = 'e50914',
-      progress,
-      nextEpisode = true,
-      episodeSelector = true,
-      autoplayNextEpisode = true,
-      overlay = true,
-    } = options;
+  getAnimeUrl(malId, episode = 1, options = {}) {
+    const { dub = false, subOrDub } = options;
+    const audioTrack = subOrDub || (dub ? 'dub' : 'sub');
 
-    let url = `${this.videasyDomain}/anime/${anilistId}`;
+    let url = `${this.playerDomain}/anime/${malId}`;
     if (episode > 0) url += `/${episode}`;
-
-    const params = new URLSearchParams();
-    if (dub) params.append('dub', 'true');
-    if (color) params.append('color', color);
-    if (progress) params.append('progress', progress);
-    if (nextEpisode) params.append('nextEpisode', 'true');
-    if (episodeSelector) params.append('episodeSelector', 'true');
-    if (autoplayNextEpisode) params.append('autoplayNextEpisode', 'true');
-    if (overlay) params.append('overlay', 'true');
-
-    const queryString = params.toString();
-    if (queryString) url += `?${queryString}`;
+    url += `/${audioTrack}`;
 
     return url;
   }
@@ -108,7 +108,7 @@ class StreamingServices {
   }
 
   // ---- Legacy compatibility aliases ----
-  // These map old method names to the Videasy equivalents so existing
+  // These map old Videasy method names to VidLink equivalents so existing
   // callers (web components, mobile screens) keep working without changes.
 
   getVideasyMovieUrl(tmdbId, options = {}) {
@@ -119,21 +119,22 @@ class StreamingServices {
     return this.getTVUrl(tmdbId, season, episode, options);
   }
 
-  getVideasyAnimeUrl(anilistId, episode = 1, options = {}) {
-    return this.getAnimeUrl(anilistId, episode, options);
+  getVideasyAnimeUrl(malId, episode = 1, options = {}) {
+    return this.getAnimeUrl(malId, episode, options);
   }
 
   /**
-   * Get all available streaming URLs for a content item
-   * Returns a single Videasy URL with legacy key aliases for backward compat
+   * Get all available streaming URLs for a content item.
+   * Returns a single VidLink URL with legacy key aliases for backward compat.
    */
   getAllStreamingUrls(content, options = {}) {
     const url = this.getStreamingUrl(content, options);
 
     return {
       server1: url,
-      videasy: url,
+      vidlink: url,
       // Legacy aliases
+      videasy: url,
       vidsrc: url,
     };
   }
