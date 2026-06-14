@@ -1,27 +1,30 @@
 import streamingServices from '../streamingServices';
 import { PLAYER_DEFAULTS } from '@skystream/shared';
 
-const BASE = PLAYER_DEFAULTS.videasyBaseUrl;
+const BASE = PLAYER_DEFAULTS.playerBaseUrl;
 
-describe('StreamingServices (Videasy)', () => {
+describe('StreamingServices (VidLink)', () => {
   describe('getMovieUrl', () => {
     it('generates basic movie URL', () => {
       const url = streamingServices.getMovieUrl(299534);
       expect(url).toContain(`${BASE}/movie/299534`);
     });
 
-    it('includes default color and overlay', () => {
+    it('includes default primaryColor, poster, and title', () => {
       const url = streamingServices.getMovieUrl(299534);
-      expect(url).toContain('color=e50914');
-      expect(url).toContain('overlay=true');
+      expect(url).toContain('primaryColor=e50914');
+      expect(url).toContain('poster=true');
+      expect(url).toContain('title=true');
+      // Videasy overlay param must not bleed through
+      expect(url).not.toContain('overlay=');
     });
 
-    it('accepts custom options', () => {
+    it('accepts custom color (legacy param) and progress', () => {
       const url = streamingServices.getMovieUrl(299534, {
         color: '3B82F6',
         progress: 60,
       });
-      expect(url).toContain('color=3B82F6');
+      expect(url).toContain('primaryColor=3B82F6');
       expect(url).toContain('progress=60');
     });
   });
@@ -32,11 +35,14 @@ describe('StreamingServices (Videasy)', () => {
       expect(url).toContain(`${BASE}/tv/1399/2/5`);
     });
 
-    it('includes episode navigation features by default', () => {
+    it('uses nextbutton (not nextEpisode) and omits removed Videasy params', () => {
       const url = streamingServices.getTVUrl(1399, 1, 1);
-      expect(url).toContain('nextEpisode=true');
-      expect(url).toContain('episodeSelector=true');
-      expect(url).toContain('autoplayNextEpisode=true');
+      expect(url).toContain('nextbutton=true');
+      expect(url).toContain('poster=true');
+      expect(url).toContain('title=true');
+      expect(url).not.toContain('episodeSelector=');
+      expect(url).not.toContain('autoplayNextEpisode=');
+      expect(url).not.toContain('overlay=');
     });
 
     it('defaults to season 1 episode 1', () => {
@@ -46,14 +52,15 @@ describe('StreamingServices (Videasy)', () => {
   });
 
   describe('getAnimeUrl', () => {
-    it('generates anime URL with episode', () => {
+    it('generates anime URL with episode (defaults to sub)', () => {
       const url = streamingServices.getAnimeUrl(21, 5);
-      expect(url).toContain(`${BASE}/anime/21/5`);
+      expect(url).toContain(`${BASE}/anime/21/5/sub`);
     });
 
-    it('supports dub option', () => {
+    it('supports dub option (backward-compat boolean → path segment)', () => {
       const url = streamingServices.getAnimeUrl(21, 1, { dub: true });
-      expect(url).toContain('dub=true');
+      expect(url).toContain('/dub');
+      expect(url).not.toContain('/sub');
     });
   });
 
@@ -73,20 +80,22 @@ describe('StreamingServices (Videasy)', () => {
   });
 
   describe('getAllStreamingUrls', () => {
-    it('returns Videasy URL with legacy aliases for movies', () => {
+    it('returns VidLink URL with legacy aliases for movies', () => {
       const urls = streamingServices.getAllStreamingUrls({ id: 299534, type: 'movie' });
-      expect(urls.videasy).toContain(`${BASE}/movie/299534`);
-      expect(urls.server1).toBe(urls.videasy);
-      expect(urls.vidsrc).toBe(urls.videasy);
+      expect(urls.server1).toContain(`${BASE}/movie/299534`);
+      expect(urls.vidlink).toBe(urls.server1);
+      // Legacy aliases still present for backward compat
+      expect(urls.videasy).toBe(urls.server1);
+      expect(urls.vidsrc).toBe(urls.server1);
     });
 
-    it('returns Videasy URL with legacy aliases for TV', () => {
+    it('returns VidLink URL with legacy aliases for TV', () => {
       const urls = streamingServices.getAllStreamingUrls(
         { id: 1399, type: 'tv' },
         { season: 1, episode: 1 }
       );
-      expect(urls.videasy).toContain(`${BASE}/tv/1399/1/1`);
-      expect(urls.server1).toBe(urls.videasy);
+      expect(urls.server1).toContain(`${BASE}/tv/1399/1/1`);
+      expect(urls.vidlink).toBe(urls.server1);
     });
   });
 

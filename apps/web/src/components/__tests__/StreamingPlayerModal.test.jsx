@@ -29,8 +29,11 @@ describe('StreamingPlayerModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     streamingServices.getAllStreamingUrls = jest.fn(() => ({
-      vidsrc: 'https://vidsrc.test/movie/1',
-      videasy: 'https://videasy.test/movie/1',
+      server1: 'https://vidlink.test/movie/1',
+      vidlink: 'https://vidlink.test/movie/1',
+      // Legacy aliases
+      videasy: 'https://vidlink.test/movie/1',
+      vidsrc: 'https://vidlink.test/movie/1',
     }));
     tmdbApi.getTVSeasonsData = jest.fn().mockResolvedValue({
       total_seasons: 2,
@@ -55,7 +58,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
       />
     );
@@ -69,7 +72,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
       />
     );
@@ -83,7 +86,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
       />
     );
@@ -99,7 +102,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={onClose}
         content={mockContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
       />
     );
@@ -114,7 +117,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
       />
     );
@@ -129,7 +132,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -146,7 +149,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -164,7 +167,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -190,7 +193,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -218,7 +221,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -238,7 +241,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -251,7 +254,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -268,7 +271,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={null}
-        platform="videasy"
+        platform="vidlink"
         embedUrl="https://fallback.com"
       />
     );
