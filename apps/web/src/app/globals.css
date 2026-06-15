@@ -1,88 +1,51 @@
-/* Netflix-inspired Global Styles */
-@import "../styles/responsive.css";
+/* SkyLog Global Styles */
 
-/* Dark Theme (Default - Netflix-inspired) */
-:root,
-:root[data-theme="dark"] {
-  /* Netflix Color Palette - Dark Theme */
-  --netflix-red: #e50914;
-  --netflix-red-dark: #b20710;
-  --netflix-black: #141414;
-  --netflix-dark-gray: #181818;
-  --netflix-gray: #333333;
-  --netflix-light-gray: #564d4d;
-  --netflix-white: #ffffff;
-  --netflix-text-gray: #b3b3b3;
+:root {
+  /* SkyLog Color Palette */
+  --accent: #00d4aa;
+  --accent-hover: #00b894;
+  --accent-dim: rgba(0, 212, 170, 0.1);
+  --accent-border: rgba(0, 212, 170, 0.25);
 
-  /* Semantic color variables for theming */
-  --bg-primary: #141414;
-  --bg-secondary: #181818;
-  --bg-tertiary: #333333;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --text-tertiary: #808080;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --overlay-bg: rgba(0, 0, 0, 0.8);
-  --card-bg: #181818;
-  --card-hover-bg: #2a2a2a;
-  --input-bg: rgba(255, 255, 255, 0.1);
-  --input-border: rgba(255, 255, 255, 0.3);
-  --scrollbar-track: #181818;
-  --scrollbar-thumb: #333333;
-  --scrollbar-thumb-hover: #564d4d;
+  /* Backgrounds */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #111827;
+  --bg-card: #0f1729;
+  --bg-card-hover: #162040;
+
+  /* Text */
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  /* Borders */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
+
+  /* Scrollbar */
+  --scrollbar-track: #111827;
+  --scrollbar-thumb: #1f2d45;
+  --scrollbar-thumb-hover: #2a3d5f;
 
   /* Typography */
   font-family:
-    "Inter",
+    'Inter',
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
-    "Roboto",
-    "Oxygen",
-    "Ubuntu",
-    "Cantarell",
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* Smooth scrolling */
   scroll-behavior: smooth;
-
-  /* Font rendering */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Light Theme */
-:root[data-theme="light"] {
-  /* Netflix Color Palette - Light Theme */
-  --netflix-red: #e50914;
-  --netflix-red-dark: #b20710;
-  --netflix-black: #f5f5f5;
-  --netflix-dark-gray: #ffffff;
-  --netflix-gray: #e0e0e0;
-  --netflix-light-gray: #d0d0d0;
-  --netflix-white: #1a1a1a;
-  --netflix-text-gray: #4a4a4a;
-
-  /* Semantic color variables for light theme */
-  --bg-primary: #f5f5f5;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #e0e0e0;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-tertiary: #6a6a6a;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --overlay-bg: rgba(255, 255, 255, 0.95);
-  --card-bg: #ffffff;
-  --card-hover-bg: #f8f8f8;
-  --input-bg: rgba(0, 0, 0, 0.05);
-  --input-border: rgba(0, 0, 0, 0.2);
-  --scrollbar-track: #f0f0f0;
-  --scrollbar-thumb: #c0c0c0;
-  --scrollbar-thumb-hover: #a0a0a0;
 }
 
 * {
@@ -91,11 +54,8 @@
   box-sizing: border-box;
 }
 
-/* Smooth theme transitions */
 html {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  background-color: var(--bg-primary);
 }
 
 body {
@@ -104,9 +64,6 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
 }
 
 /* Typography */
@@ -119,7 +76,6 @@ h6 {
   font-weight: 600;
   line-height: 1.2;
   color: var(--text-primary);
-  transition: color 0.3s ease;
 }
 
 h1 {
@@ -137,18 +93,17 @@ h3 {
 p {
   line-height: 1.6;
   color: var(--text-secondary);
-  transition: color 0.3s ease;
 }
 
 /* Links */
 a {
   color: var(--text-primary);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--netflix-red);
+  color: var(--accent);
 }
 
 /* Buttons */
@@ -156,120 +111,34 @@ button {
   font-family: inherit;
   cursor: pointer;
   border: none;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  transition: all 0.2s ease;
   font-weight: 500;
-}
-
-.btn-primary {
-  background-color: var(--netflix-red);
-  color: var(--netflix-white);
-  padding: 12px 24px;
-  font-size: 1rem;
-}
-
-.btn-primary:hover {
-  background-color: var(--netflix-red-dark);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--netflix-white);
-  padding: 12px 24px;
-  font-size: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
-  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 4px;
-  transition: background 0.3s ease;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }
 
-/* Responsive Design */
-/* iPad and larger tablets */
-@media (max-width: 1024px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-  }
-}
-
-/* iPad Portrait and smaller tablets */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  h3 {
-    font-size: 1.25rem;
-  }
-
-  .container {
-    padding: 0 1rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 12px 24px;
-    font-size: 0.9rem;
-    min-height: 44px; /* Touch-friendly minimum */
-  }
-}
-
-/* Mobile phones */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.75rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-  }
-
-  h3 {
-    font-size: 1.1rem;
-  }
-
-  .container {
-    padding: 0 0.75rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 14px 20px;
-    font-size: 0.9rem;
-    min-height: 44px;
-    width: 100%;
-    max-width: 280px;
-  }
+/* Focus States for Accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Loading Animation */
@@ -287,68 +156,31 @@ button {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* Focus States for Accessibility */
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--netflix-red);
-  outline-offset: 2px;
-}
-
-/* Streaming App Specific Styles */
-.streaming-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.streaming-hero {
-  background: linear-gradient(135deg, var(--netflix-black) 0%, var(--netflix-dark-gray) 100%);
-  padding: 4rem 2rem 2rem 2rem;
-  text-align: center;
-}
-
-.streaming-hero h1 {
-  background: linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 3rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-}
-
-/* Enhanced mobile responsiveness for streaming features */
+/* Responsive Typography */
 @media (max-width: 768px) {
-  .streaming-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  .streaming-hero {
-    padding: 2rem 1rem 1rem 1rem;
-  }
-
-  .streaming-hero h1 {
+  h1 {
     font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
-  .streaming-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.75rem;
-    padding: 0.75rem;
-  }
-
-  .streaming-hero {
-    padding: 1.5rem 0.75rem 1rem 0.75rem;
-  }
-
-  .streaming-hero h1 {
+  h1 {
     font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
   }
 }

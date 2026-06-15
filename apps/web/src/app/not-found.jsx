@@ -17,7 +17,7 @@ export default function NotFound() {
         style={{
           fontSize: '3rem',
           fontWeight: '700',
-          color: 'var(--netflix-red)',
+          color: '#00d4aa',
           marginBottom: '1rem',
         }}
       >
@@ -25,7 +25,7 @@ export default function NotFound() {
       </h1>
       <h2
         style={{
-          color: 'var(--text-primary)',
+          color: '#f9fafb',
           marginBottom: '1rem',
         }}
       >
@@ -33,46 +33,27 @@ export default function NotFound() {
       </h2>
       <p
         style={{
-          color: 'var(--text-secondary)',
+          color: '#9ca3af',
           marginBottom: '2rem',
           maxWidth: '400px',
         }}
       >
         The page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <Link
-          href="/"
-          style={{
-            padding: '0.75rem 2rem',
-            background: 'var(--netflix-red)',
-            color: 'white',
-            borderRadius: '4px',
-            fontSize: '1rem',
-            fontWeight: '600',
-            textDecoration: 'none',
-            transition: 'background-color 0.2s ease',
-          }}
-        >
-          Go Home
-        </Link>
-        <Link
-          href="/?focus=search"
-          style={{
-            padding: '0.75rem 2rem',
-            background: 'transparent',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '4px',
-            fontSize: '1rem',
-            fontWeight: '600',
-            textDecoration: 'none',
-            transition: 'border-color 0.2s ease, color 0.2s ease',
-          }}
-        >
-          Search Content
-        </Link>
-      </div>
+      <Link
+        href="/"
+        style={{
+          padding: '0.75rem 2rem',
+          background: '#00d4aa',
+          color: '#0a0a1a',
+          borderRadius: '8px',
+          fontSize: '1rem',
+          fontWeight: '600',
+          textDecoration: 'none',
+        }}
+      >
+        Go Home
+      </Link>
     </div>
   );
 }
