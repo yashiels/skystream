@@ -1,61 +1,59 @@
 import streamingServices from '../streaming/StreamingServices.js';
 import { PLAYER_DEFAULTS } from '@skystream/shared';
 
-const BASE = PLAYER_DEFAULTS.videasyBaseUrl;
+const BASE = PLAYER_DEFAULTS.vidsrcBaseUrl;
 
-describe('StreamingServices (Videasy)', () => {
+describe('StreamingServices (VidSrc)', () => {
   describe('getMovieUrl', () => {
     it('generates a movie URL with default options', () => {
       const url = streamingServices.getMovieUrl(550);
-      expect(url).toContain(`${BASE}/movie/550`);
-      expect(url).toContain('color=e50914');
-      expect(url).toContain('overlay=true');
+      expect(url).toContain(`${BASE}/embed/movie/550`);
+      expect(url).toContain('autoplay=1');
     });
 
-    it('accepts custom color and progress', () => {
-      const url = streamingServices.getMovieUrl(550, { color: '3B82F6', progress: 120 });
-      expect(url).toContain('color=3B82F6');
-      expect(url).toContain('progress=120');
+    it('drops the dead color/overlay params and maps progress to startAt', () => {
+      const url = streamingServices.getMovieUrl(550, { startAt: 120 });
+      expect(url).toContain('startAt=120');
+      expect(url).not.toContain('color');
+      expect(url).not.toContain('overlay');
+    });
+
+    it('respects autoplay=0', () => {
+      const url = streamingServices.getMovieUrl(550, { autoplay: 0 });
+      expect(url).toContain('autoplay=0');
     });
   });
 
   describe('getTVUrl', () => {
     it('generates a TV URL with season and episode', () => {
       const url = streamingServices.getTVUrl(1399, 2, 5);
-      expect(url).toContain(`${BASE}/tv/1399/2/5`);
-      expect(url).toContain('nextEpisode=true');
-      expect(url).toContain('episodeSelector=true');
-      expect(url).toContain('autoplayNextEpisode=true');
+      expect(url).toContain(`${BASE}/embed/tv/1399/2/5`);
+      expect(url).toContain('autonext=1');
     });
 
     it('defaults to season 1 episode 1', () => {
       const url = streamingServices.getTVUrl(1399);
-      expect(url).toContain('/tv/1399/1/1');
-    });
-  });
-
-  describe('getAnimeUrl', () => {
-    it('generates an anime URL with episode', () => {
-      const url = streamingServices.getAnimeUrl(21, 5);
-      expect(url).toContain(`${BASE}/anime/21/5`);
+      expect(url).toContain('/embed/tv/1399/1/1');
     });
 
-    it('supports dub option', () => {
-      const url = streamingServices.getAnimeUrl(21, 1, { dub: true });
-      expect(url).toContain('dub=true');
+    it('maps progress to startAt and drops the dead episodeSelector param', () => {
+      const url = streamingServices.getTVUrl(1399, 1, 1, { startAt: 90 });
+      expect(url).toContain('startAt=90');
+      expect(url).not.toContain('nextEpisode');
+      expect(url).not.toContain('episodeSelector');
+      expect(url).not.toContain('autoplayNextEpisode');
     });
 
-    it('generates anime movie URL (no episode)', () => {
-      const url = streamingServices.getAnimeUrl(145139, 0);
-      expect(url).toContain(`${BASE}/anime/145139`);
-      expect(url).not.toContain('/0');
+    it('can disable autonext', () => {
+      const url = streamingServices.getTVUrl(1399, 1, 1, { autonext: false });
+      expect(url).not.toContain('autonext');
     });
   });
 
   describe('getStreamingUrl', () => {
     it('returns movie URL for movie content', () => {
       const url = streamingServices.getStreamingUrl({ id: 550, type: 'movie' });
-      expect(url).toContain('/movie/550');
+      expect(url).toContain('/embed/movie/550');
     });
 
     it('returns TV URL for tv content with season/episode', () => {
@@ -63,43 +61,35 @@ describe('StreamingServices (Videasy)', () => {
         { id: 1399, type: 'tv' },
         { season: 3, episode: 9 }
       );
-      expect(url).toContain('/tv/1399/3/9');
+      expect(url).toContain('/embed/tv/1399/3/9');
     });
 
     it('returns null for unknown content type', () => {
       const url = streamingServices.getStreamingUrl({ id: 1, type: 'podcast' });
       expect(url).toBeNull();
     });
+
+    it('returns null for anime content — no VidSrc anime endpoint', () => {
+      const url = streamingServices.getStreamingUrl({ id: 21, type: 'anime' });
+      expect(url).toBeNull();
+    });
   });
 
   describe('getAllStreamingUrls', () => {
-    it('returns Videasy URL with legacy aliases for a movie', () => {
+    it('returns the VidSrc URL with legacy aliases for a movie', () => {
       const urls = streamingServices.getAllStreamingUrls({ id: 550, type: 'movie' });
 
-      expect(urls.server1).toContain(`${BASE}/movie/550`);
-      expect(urls.videasy).toBe(urls.server1);
+      expect(urls.server1).toContain(`${BASE}/embed/movie/550`);
       expect(urls.vidsrc).toBe(urls.server1);
     });
 
-    it('returns Videasy URL with season/episode for TV', () => {
+    it('returns the VidSrc URL with season/episode for TV', () => {
       const urls = streamingServices.getAllStreamingUrls(
         { id: 1399, type: 'tv' },
         { season: 1, episode: 1 }
       );
 
-      expect(urls.server1).toContain('/tv/1399/1/1');
-    });
-  });
-
-  describe('legacy aliases', () => {
-    it('getVideasyMovieUrl maps to getMovieUrl', () => {
-      expect(streamingServices.getVideasyMovieUrl(550)).toBe(streamingServices.getMovieUrl(550));
-    });
-
-    it('getVideasyTVUrl maps to getTVUrl', () => {
-      expect(streamingServices.getVideasyTVUrl(1399, 1, 1)).toBe(
-        streamingServices.getTVUrl(1399, 1, 1)
-      );
+      expect(urls.server1).toContain('/embed/tv/1399/1/1');
     });
   });
 });

@@ -2,6 +2,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import StreamingPlayerModal from '../StreamingPlayerModal';
 import streamingServices from '../../services/streamingServices';
 import tmdbApi from '../../services/tmdbApi';
+import { PLAYER_DEFAULTS } from '@skystream/shared';
+
+const VIDSRC_ORIGIN = new URL(PLAYER_DEFAULTS.vidsrcBaseUrl).origin;
+
+const dispatchPlayerEvent = (data, origin = VIDSRC_ORIGIN) => {
+  fireEvent(window, new MessageEvent('message', { data, origin }));
+};
 
 jest.mock('../../services/streamingServices');
 jest.mock('../../services/tmdbApi');
@@ -28,9 +35,9 @@ describe('StreamingPlayerModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    window.localStorage.clear();
     streamingServices.getAllStreamingUrls = jest.fn(() => ({
       vidsrc: 'https://vidsrc.test/movie/1',
-      videasy: 'https://videasy.test/movie/1',
     }));
     tmdbApi.getTVSeasonsData = jest.fn().mockResolvedValue({
       total_seasons: 2,
@@ -55,7 +62,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
       />
     );
@@ -69,7 +76,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
       />
     );
@@ -83,7 +90,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
       />
     );
@@ -99,7 +106,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={onClose}
         content={mockContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
       />
     );
@@ -114,7 +121,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
       />
     );
@@ -129,7 +136,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -146,7 +153,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -164,7 +171,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -190,7 +197,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -218,7 +225,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -238,7 +245,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -251,7 +258,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -268,7 +275,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={null}
-        platform="videasy"
+        platform="vidsrc"
         embedUrl="https://fallback.com"
       />
     );
@@ -383,6 +390,89 @@ describe('StreamingPlayerModal', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Test TV Show')).toBeInTheDocument();
+      });
+    });
+
+    test('ignores PLAYER_EVENT messages from an untrusted origin', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+
+      dispatchPlayerEvent(
+        {
+          type: 'PLAYER_EVENT',
+          data: { player_status: 'playing', player_progress: 42 },
+        },
+        'https://evil.example.com'
+      );
+
+      expect(window.localStorage.getItem('skystream:progress:movie:1')).toBeNull();
+    });
+
+    test('persists player_progress to localStorage while playing', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+
+      dispatchPlayerEvent({
+        type: 'PLAYER_EVENT',
+        data: {
+          player_info: { tmdb: 1, mediaType: 'movie', season: null, episode: null },
+          player_status: 'playing',
+          player_progress: 125.4,
+        },
+      });
+
+      expect(window.localStorage.getItem('skystream:progress:movie:1')).toBe('125');
+    });
+
+    test('clears stored progress when playback completes', () => {
+      window.localStorage.setItem('skystream:progress:movie:1', '125');
+
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+
+      dispatchPlayerEvent({
+        type: 'PLAYER_EVENT',
+        data: { player_status: 'completed', player_progress: 7200 },
+      });
+
+      expect(window.localStorage.getItem('skystream:progress:movie:1')).toBeNull();
+    });
+
+    test('restores playback position via startAt on the next render', () => {
+      window.localStorage.setItem('skystream:progress:movie:1', '300');
+
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+
+      expect(streamingServices.getStreamingUrl).toHaveBeenCalledWith(
+        mockContent,
+        expect.objectContaining({ startAt: 300 })
+      );
+    });
+
+    test('follows autonext episode chaining from player_info', async () => {
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={jest.fn()}
+          content={mockTVContent}
+          contentType="tv"
+          season={1}
+          episode={1}
+        />
+      );
+
+      await waitFor(() => {
+        expect(tmdbApi.getTVSeasonsData).toHaveBeenCalled();
+      });
+
+      dispatchPlayerEvent({
+        type: 'PLAYER_EVENT',
+        data: {
+          player_info: { tmdb: 2, mediaType: 'tv', season: 1, episode: 2 },
+          player_status: 'playing',
+          player_progress: 5,
+        },
+      });
+
+      await waitFor(() => {
+        expect(document.querySelector('#episode-select').value).toBe('2');
       });
     });
   });
