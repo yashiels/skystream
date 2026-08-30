@@ -3,7 +3,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TMDB API](https://img.shields.io/badge/TMDB_API-01B4E4?style=for-the-badge&logo=themoviedatabase&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
 A streaming platform interface built with Next.js 16 and React 19 for browsing
@@ -30,22 +30,22 @@ interface to browse and access content.
 - **Dark/Light Theme** — Toggle between themes with persistent preference
 - **PWA** — Installable as a Progressive Web App
 - **SEO** — Structured data (JSON-LD), dynamic meta tags, sitemap
-- **Analytics** — Google Analytics + Vercel Analytics for usage tracking
+- **Analytics** — Google Analytics with Consent Mode for usage tracking
 - **Responsive** — Optimized for desktop, tablet, and mobile
 
 ## Tech Stack
 
-| Category  | Technology                                                |
-| --------- | --------------------------------------------------------- |
-| Framework | Next.js 16 (App Router, Turbopack)                        |
-| UI        | React 19, CSS3 with CSS Variables, Lucide React icons     |
-| Video     | video.js, hls.js                                          |
-| API       | TMDB API (content metadata, search, images)               |
-| Streaming | Videasy, Vidsrc (multi-server)                            |
-| Analytics | Google Analytics, Vercel Analytics, Vercel Speed Insights |
-| Testing   | Jest 30, React Testing Library                            |
-| Linting   | ESLint, Prettier                                          |
-| Hosting   | Vercel                                                    |
+| Category  | Technology                                            |
+| --------- | ----------------------------------------------------- |
+| Framework | Next.js 16 (App Router, Turbopack)                    |
+| UI        | React 19, CSS3 with CSS Variables, Lucide React icons |
+| Video     | video.js, hls.js                                      |
+| API       | TMDB API (content metadata, search, images)           |
+| Streaming | Videasy, Vidsrc (multi-server)                        |
+| Analytics | Google Analytics (Consent Mode)                       |
+| Testing   | Jest 30, React Testing Library                        |
+| Linting   | ESLint, Prettier                                      |
+| Hosting   | Docker container (Coolify)                            |
 
 ## Project Structure
 
@@ -138,19 +138,45 @@ npm run dev
 
 ### Environment Variables
 
-| Variable                          | Description                                  | Required |
-| --------------------------------- | -------------------------------------------- | -------- |
-| `NEXT_PUBLIC_TMDB_API_KEY`        | TMDB API key                                 | Yes      |
-| `NEXT_PUBLIC_TMDB_BASE_URL`       | TMDB API base URL                            | No       |
-| `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL                           | No       |
-| `NEXT_PUBLIC_GA_TRACKING_ID`      | Google Analytics tracking ID                 | No       |
-| `NEXT_PUBLIC_ENABLE_ANALYTICS`    | Enable/disable analytics                     | No       |
-| `NEXT_PUBLIC_DEFAULT_PLAYER`      | Default video player (`videasy` or `vidsrc`) | No       |
+Full contract with defaults: [`apps/web/.env.example`](apps/web/.env.example).
+
+| Variable                          | Description                                    | Required |
+| --------------------------------- | ---------------------------------------------- | -------- |
+| `NEXT_PUBLIC_TMDB_API_KEY`        | TMDB API key                                   | Yes      |
+| `NEXT_PUBLIC_TMDB_BASE_URL`       | TMDB API base URL                              | No       |
+| `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL                             | No       |
+| `NEXT_PUBLIC_VIDSRC_BASE_URL`     | VidSrc player origin (also sets CSP frame-src) | No       |
+| `NEXT_PUBLIC_GA_TRACKING_ID`      | Google Analytics tracking ID                   | No       |
+| `NEXT_PUBLIC_ENABLE_ANALYTICS`    | Enable/disable analytics                       | No       |
+| `NEXT_PUBLIC_DEFAULT_PLAYER`      | Default video player (`videasy` or `vidsrc`)   | No       |
+
+Every variable above is `NEXT_PUBLIC_*`, so Next.js inlines it at build time.
+Setting one on a running container has no effect — change it and rebuild.
 
 ## Deployment
 
-Deployed on [Vercel](https://vercel.com). Set environment variables in the
-Vercel dashboard. Pushes to `production` branch trigger automatic deploys.
+The web app ships as a container. `apps/web/Dockerfile` is a multi-stage build:
+`turbo prune` reduces the workspace to `web` and its dependencies (the mobile
+app and dev dependencies never reach the runtime image), and the final stage
+runs Next.js standalone output as a non-root user.
+
+Build from the repository root:
+
+```bash
+docker build -f apps/web/Dockerfile \
+  --build-arg NEXT_PUBLIC_TMDB_API_KEY=<key> \
+  -t skystream-web .
+```
+
+Run it:
+
+```bash
+docker run --rm -p 3000:3000 skystream-web
+```
+
+The server listens on `PORT` (default `3000`) and binds `HOSTNAME` (default
+`0.0.0.0`); both are true runtime variables. Everything else is a build argument
+— on Coolify, set the TMDB key as a **build-time** variable.
 
 ## Contributing
 
@@ -173,5 +199,4 @@ Built by [Skyner Group](https://github.com/skynergroup) —
 [Mpho Ndlela](https://github.com/MphoCodes).
 
 Powered by [TMDB](https://www.themoviedb.org/),
-[Videasy](https://player.videasy.to/), [Vidsrc](https://vidsrc.xyz/), and
-[Vercel](https://vercel.com/).
+[Videasy](https://player.videasy.to/), and [Vidsrc](https://vidsrc.xyz/).

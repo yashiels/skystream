@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+import path from 'node:path';
 import { PLAYER_DEFAULTS } from '@skystream/shared';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -7,6 +8,13 @@ const isDev = process.env.NODE_ENV === 'development';
 const vidsrcOrigin = new URL(PLAYER_DEFAULTS.vidsrcBaseUrl).origin;
 
 const nextConfig = {
+  // Self-hosted container runtime: emit `.next/standalone/apps/web/server.js`
+  // with only the traced runtime deps, so the image doesn't carry the pnpm
+  // workspace or dev dependencies. See apps/web/Dockerfile.
+  output: 'standalone',
+  // Trace from the monorepo root — `@skystream/api` and `@skystream/shared`
+  // live outside apps/web and must be copied into the standalone bundle.
+  outputFileTracingRoot: path.join(import.meta.dirname, '../..'),
   // Inline public env vars at build time with sensible defaults.
   env: {
     NEXT_PUBLIC_TMDB_API_KEY: process.env.NEXT_PUBLIC_TMDB_API_KEY || '',
@@ -44,10 +52,10 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com`,
               "worker-src 'self'",
               "manifest-src 'self'",
-              "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live",
+              "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com",
               "connect-src 'self' https:",
               `frame-src 'self' ${vidsrcOrigin}`,
               "img-src 'self' data: https: blob:",
