@@ -11,7 +11,10 @@ apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.grad
 react {
     /* Folders */
     //   The root of your project, i.e. where "package.json" lives. Default is '../..'
-    root = file("../../../../")
+    //   This is the mobile app package (apps/mobile), NOT the monorepo root — the
+    //   entry file and metro.config.js live here. The node_modules paths below stay
+    //   pointed at the workspace root because pnpm hoists packages there.
+    root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
     reactNativeDir = file("../../../../node_modules/react-native")
     //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
@@ -47,7 +50,9 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+    //   The plugin's default lookup is relative to `root` above, which misses it
+    //   because pnpm hoists hermes-compiler to the workspace root.
+    hermesCommand = file("../../../../node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc").toString()
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
