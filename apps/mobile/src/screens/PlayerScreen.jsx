@@ -16,17 +16,14 @@ import { streamingServices } from '@skystream/api';
 import { PLAYER_DEFAULTS } from '@skystream/shared';
 import { spacing, fontSize, borderRadius } from '../theme';
 
-// Derive videasy domains from the single source of truth in @skystream/shared
-const _videasyHost = PLAYER_DEFAULTS.videasyBaseUrl.replace(/^https?:\/\//, ''); // e.g. 'player.videasy.to'
-const _videasyRoot = _videasyHost.split('.').slice(-2).join('.'); // e.g. 'videasy.to'
+// Derive the VidSrc domain from the single source of truth in @skystream/shared
+const _vidsrcHost = PLAYER_DEFAULTS.vidsrcBaseUrl.replace(/^https?:\/\//, ''); // e.g. 'vidsrcme.ru'
+const _vidsrcRoot = _vidsrcHost.split('.').slice(-2).join('.'); // e.g. 'vidsrcme.ru'
 
 const ALLOWED_DOMAINS = [
-  _videasyHost, // 'player.videasy.to'
-  `www.${_videasyRoot}`, // 'www.videasy.to'
-  _videasyRoot, // 'videasy.to'
-  'player.videasy.net', // legacy compat
-  'www.videasy.net', // legacy compat
-  'videasy.net', // legacy compat
+  _vidsrcHost, // 'vidsrcme.ru'
+  `www.${_vidsrcRoot}`, // 'www.vidsrcme.ru'
+  _vidsrcRoot, // 'vidsrcme.ru'
   'fonts.googleapis.com',
   'fonts.gstatic.com',
   'cdn.jsdelivr.net',
@@ -57,7 +54,7 @@ const AD_BLOCK_JS = `
   if (origAssign) {
     Object.defineProperty(window.location, 'assign', {
       value: function(url) {
-        if (url && url.includes && (url.includes('videasy') || url.includes('player.videasy'))) {
+        if (url && url.includes && url.includes('${_vidsrcRoot}')) {
           origAssign.value.call(this, url);
         }
       }
@@ -67,7 +64,7 @@ const AD_BLOCK_JS = `
   if (origReplace) {
     Object.defineProperty(window.location, 'replace', {
       value: function(url) {
-        if (url && url.includes && (url.includes('videasy') || url.includes('player.videasy'))) {
+        if (url && url.includes && url.includes('${_vidsrcRoot}')) {
           origReplace.value.call(this, url);
         }
       }
@@ -116,9 +113,9 @@ export default function PlayerScreen({ colors }) {
   const getUrl = useCallback(
     (s, e) => {
       if (contentType === 'movie') {
-        return streamingServices.getVideasyMovieUrl(content.id);
+        return streamingServices.getMovieUrl(content.id);
       }
-      return streamingServices.getVideasyTVUrl(content.id, s, e);
+      return streamingServices.getTVUrl(content.id, s, e);
     },
     [content, contentType]
   );
