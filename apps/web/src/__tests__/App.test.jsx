@@ -12,14 +12,6 @@ jest.mock('next/script', () => {
   };
 });
 
-jest.mock('@vercel/analytics/react', () => ({
-  Analytics: () => null,
-}));
-
-jest.mock('@vercel/speed-insights/react', () => ({
-  SpeedInsights: () => null,
-}));
-
 jest.mock('../components/Layout', () => {
   return function MockLayout({ children }) {
     return <div data-testid="layout">{children}</div>;

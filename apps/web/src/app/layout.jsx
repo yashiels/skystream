@@ -1,7 +1,5 @@
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import ClientLayout from '../components/Layout';
 import './globals.css';
 
@@ -118,8 +116,6 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
-        <Analytics />
-        <SpeedInsights />
 
         {/* Google tag (gtag.js) with Consent Mode */}
         <Script

@@ -3,6 +3,10 @@ node_modules/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+# pnpm falls back to a store inside the project when the global store is on a
+# different filesystem (bind-mounted CI checkouts, `act` runs). Its JSON index
+# would otherwise fail format:check.
+.pnpm-store/
 
 # Build outputs
 dist/

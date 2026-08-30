@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# pnpm store, when it lands inside the project rather than the global location
+.pnpm-store/
+
 # Git worktrees (linked agent/dev worktrees live here)
 .worktrees/
 

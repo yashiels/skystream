@@ -1,0 +1,33 @@
+# Keep the build context small — the pruner stage copies the whole repo.
+.git
+.github
+.worktrees
+node_modules
+**/node_modules
+.turbo
+**/.turbo
+.next
+**/.next
+**/dist
+**/coverage
+**/*.log
+
+# Never bake real secrets into an image layer.
+.env
+.env.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# apps/mobile stays in the context: `turbo prune` reads every workspace package
+# to prune the lockfile, and drops mobile from its output. Only its heavy native
+# build artefacts are excluded.
+apps/mobile/ios/Pods
+apps/mobile/ios/build
+apps/mobile/android/.gradle
+apps/mobile/android/build
+apps/mobile/android/app/build
+
+docs
+*.md
+!apps/web/**/*.md

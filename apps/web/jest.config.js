@@ -36,6 +36,9 @@ export default {
     '<rootDir>/src/**/*.{spec,test}.{js,jsx}',
   ],
   moduleFileExtensions: ['js', 'jsx', 'json'],
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
+  // The standalone build emits .next/standalone/apps/web/package.json, which
+  // collides with this package's own name in jest-haste-map. Keep .next out.
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/.next/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/.next/'],
 };
