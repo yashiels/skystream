@@ -8,8 +8,45 @@ import { updateBrowserUrl } from '../utils/urlRouting';
 
 import './StreamingPlayerModal.css';
 
-// Single player — Videasy handles all streaming
-const DEFAULT_SERVER = 'videasy';
+// Single player — VidSrc handles all streaming
+const DEFAULT_SERVER = 'vidsrc';
+
+// Continue-watching: persist playback position per title (and per episode for
+// TV) so it can be restored via the `startAt` param on the next open.
+const getProgressStorageKey = (content, type, season, episode) => {
+  if (!content?.id) return null;
+  return type === 'tv'
+    ? `skystream:progress:tv:${content.id}:${season}:${episode}`
+    : `skystream:progress:movie:${content.id}`;
+};
+
+const readStoredProgress = key => {
+  if (!key || typeof window === 'undefined') return undefined;
+  try {
+    const value = window.localStorage.getItem(key);
+    return value ? Number.parseInt(value, 10) : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const writeStoredProgress = (key, seconds) => {
+  if (!key || typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(key, String(Math.floor(seconds)));
+  } catch {
+    // localStorage unavailable (private browsing, quota, etc.) — non-fatal
+  }
+};
+
+const clearStoredProgress = key => {
+  if (!key || typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // localStorage unavailable — non-fatal
+  }
+};
 
 const StreamingPlayerModal = ({
   isOpen,
@@ -57,12 +94,17 @@ const StreamingPlayerModal = ({
     }
   };
 
-  // Update embed URL when season/episode changes
+  // Update embed URL when season/episode changes, resuming from any saved
+  // continue-watching position for this title/episode
   useEffect(() => {
     if (content?.id) {
+      const startAt = readStoredProgress(
+        getProgressStorageKey(content, contentType, selectedSeason, selectedEpisode)
+      );
       const url = streamingServices.getStreamingUrl(content, {
         season: selectedSeason,
         episode: selectedEpisode,
+        ...(startAt ? { startAt } : {}),
       });
       if (url) setCurrentEmbedUrl(url);
     } else {
@@ -120,27 +162,45 @@ const StreamingPlayerModal = ({
     }
   }, [isOpen, content, contentType, selectedSeason, selectedEpisode]);
 
-  // Listen for episode changes from Server 2 navigation
+  // Listen for VidSrc player events: track playback progress for
+  // continue-watching, and follow autonext episode chaining for TV.
   useEffect(() => {
-    if (!isOpen || contentType !== 'tv') return;
+    if (!isOpen || !content?.id) return;
 
-    // Listen for postMessage from iframe about navigation
+    const vidsrcOrigin = new URL(PLAYER_DEFAULTS.vidsrcBaseUrl).origin;
+
     const handleMessage = event => {
-      const videasyOrigin = new URL(PLAYER_DEFAULTS.videasyBaseUrl).origin;
-      const allowedOrigins = [videasyOrigin, 'https://player.videasy.net', window.location.origin];
-      if (!allowedOrigins.some(o => event.origin === o)) return;
+      if (event.origin !== vidsrcOrigin) return;
+      if (!event.data || event.data.type !== 'PLAYER_EVENT') return;
 
-      if (event.data && event.data.type === 'episodeChange') {
-        const { season: newSeason, episode: newEpisode } = event.data;
-        if (newSeason && newEpisode) {
-          const seasonNum = Number.parseInt(newSeason, 10);
-          const episodeNum = Number.parseInt(newEpisode, 10);
+      const {
+        player_info: info,
+        player_status: status,
+        player_progress: progress,
+      } = event.data.data || {};
 
-          if (seasonNum !== selectedSeason || episodeNum !== selectedEpisode) {
-            setSelectedSeason(seasonNum);
-            setSelectedEpisode(episodeNum);
-          }
+      if (contentType === 'tv' && info?.season && info?.episode) {
+        const seasonNum = Number.parseInt(info.season, 10);
+        const episodeNum = Number.parseInt(info.episode, 10);
+
+        if (
+          seasonNum &&
+          episodeNum &&
+          (seasonNum !== selectedSeason || episodeNum !== selectedEpisode)
+        ) {
+          setSelectedSeason(seasonNum);
+          setSelectedEpisode(episodeNum);
         }
+      }
+
+      const key = getProgressStorageKey(content, contentType, selectedSeason, selectedEpisode);
+      if (status === 'completed') {
+        clearStoredProgress(key);
+      } else if (
+        typeof progress === 'number' &&
+        (status === 'playing' || status === 'paused' || status === 'seeked')
+      ) {
+        writeStoredProgress(key, progress);
       }
     };
 
@@ -149,7 +209,7 @@ const StreamingPlayerModal = ({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [isOpen, contentType, selectedSeason, selectedEpisode]);
+  }, [isOpen, content, contentType, selectedSeason, selectedEpisode]);
 
   // Handle escape key
   useEffect(() => {
@@ -287,7 +347,7 @@ const StreamingPlayerModal = ({
         <div className="streaming-player-modal__player">
           <iframe
             src={currentEmbedUrl}
-            title={`${content?.title} - Videasy`}
+            title={`${content?.title} - VidSrc`}
             className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
             allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
@@ -314,7 +374,7 @@ StreamingPlayerModal.propTypes = {
     id: PropTypes.number.isRequired,
     title: PropTypes.string,
   }),
-  platform: PropTypes.oneOf(['server1', 'server2', 'server3', 'videasy']),
+  platform: PropTypes.oneOf(['server1', 'server2', 'server3', 'vidsrc']),
   embedUrl: PropTypes.string,
   contentType: PropTypes.oneOf(['movie', 'tv']),
   season: PropTypes.number,
