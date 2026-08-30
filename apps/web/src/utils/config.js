@@ -41,12 +41,11 @@ if (typeof window === 'undefined' && !API_CONFIG.tmdb.apiKey) {
 
 // Video Player Configuration
 export const PLAYER_CONFIG = {
-  videasy: {
-    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || PLAYER_DEFAULTS.videasyBaseUrl,
+  vidsrc: {
+    baseUrl: process.env.NEXT_PUBLIC_VIDSRC_BASE_URL || PLAYER_DEFAULTS.vidsrcBaseUrl,
   },
   defaults: {
-    player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'videasy',
-    color: process.env.NEXT_PUBLIC_PLAYER_COLOR || 'e50914',
+    player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'vidsrc',
     autoPlay:
       process.env.NEXT_PUBLIC_AUTO_PLAY === undefined
         ? true
@@ -92,51 +91,36 @@ export const utils = {
     episode = null,
     options = {}
   ) => {
+    if (player !== 'vidsrc') return '';
+
     const playerOptions = {
-      color: PLAYER_CONFIG.defaults.color,
-      autoplay: PLAYER_CONFIG.defaults.autoPlay ? 'true' : 'false',
-      language: PLAYER_CONFIG.defaults.language,
+      autoplay: PLAYER_CONFIG.defaults.autoPlay ? '1' : '0',
       ...options,
     };
 
-    if (player === 'videasy') {
-      let url = '';
+    let url;
 
-      if (contentType === 'movie') {
-        url = `${PLAYER_CONFIG.videasy.baseUrl}/movie/${contentId}`;
-      } else if (contentType === 'tv') {
-        url = `${PLAYER_CONFIG.videasy.baseUrl}/tv/${contentId}/${season}/${episode}`;
-        // Add TV-specific options for better user experience
-        playerOptions.nextEpisode = 'true';
-        playerOptions.episodeSelector = 'true';
-        playerOptions.autoplayNextEpisode = 'true';
-      } else if (contentType === 'anime') {
-        if (episode) {
-          // For anime episodes, use anilist ID format
-          url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}/${episode}`;
-        } else {
-          // For anime movies
-          url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}`;
-        }
-        // Add dub option for anime - default to sub (false) unless specified
-        if (!Object.prototype.hasOwnProperty.call(playerOptions, 'dub')) {
-          playerOptions.dub = 'false'; // Default to sub
-        }
-      }
-
-      // Clean up playerOptions - remove undefined/null values
-      const cleanOptions = {};
-      Object.keys(playerOptions).forEach(key => {
-        if (playerOptions[key] !== undefined && playerOptions[key] !== null) {
-          cleanOptions[key] = playerOptions[key];
-        }
-      });
-
-      const params = new URLSearchParams(cleanOptions);
-      return `${url}?${params}`;
+    if (contentType === 'movie') {
+      url = `${PLAYER_CONFIG.vidsrc.baseUrl}/embed/movie/${contentId}`;
+    } else if (contentType === 'tv') {
+      url = `${PLAYER_CONFIG.vidsrc.baseUrl}/embed/tv/${contentId}/${season}/${episode}`;
+      playerOptions.autonext = '1';
+    } else {
+      // No VidSrc anime endpoint — anime content is served through the TMDB
+      // TV entry (see StreamingServices.getStreamingUrl), never reaches here.
+      return '';
     }
 
-    return '';
+    // Clean up playerOptions - remove undefined/null values
+    const cleanOptions = {};
+    Object.keys(playerOptions).forEach(key => {
+      if (playerOptions[key] !== undefined && playerOptions[key] !== null) {
+        cleanOptions[key] = playerOptions[key];
+      }
+    });
+
+    const params = new URLSearchParams(cleanOptions);
+    return `${url}?${params}`;
   },
 
   // Get IMDB ID from TMDB
@@ -164,7 +148,7 @@ export const utils = {
     }
   },
 
-  // Download URL — removed with VidSrc, Videasy does not provide download links
+  // Download URL — VidSrc does not provide download links
   getDownloadUrl: () => null,
 
   // Log function that respects environment settings

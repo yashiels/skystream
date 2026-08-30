@@ -40,7 +40,7 @@ describe('StreamingResultCard', () => {
       server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
       server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
       server4: 'https://vsrc.su/embed/movie?tmdb=1',
-      server5: `${PLAYER_DEFAULTS.videasyBaseUrl}/embed/movie?tmdb=1`,
+      server5: `${PLAYER_DEFAULTS.vidsrcBaseUrl}/embed/movie?tmdb=1`,
     }));
   });
 
@@ -250,7 +250,7 @@ describe('StreamingResultCard', () => {
         server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
         server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
         server4: 'https://vsrc.su/embed/movie?tmdb=1',
-        server5: `${PLAYER_DEFAULTS.videasyBaseUrl}/embed/movie?tmdb=1`,
+        server5: `${PLAYER_DEFAULTS.vidsrcBaseUrl}/embed/movie?tmdb=1`,
       }));
 
       render(<StreamingResultCard content={mockMovieContent} onPlay={mockOnPlay} />);
@@ -273,7 +273,7 @@ describe('StreamingResultCard', () => {
         server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
         server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
         server4: 'https://vsrc.su/embed/movie?tmdb=1',
-        server5: `${PLAYER_DEFAULTS.videasyBaseUrl}/embed/movie?tmdb=1`,
+        server5: `${PLAYER_DEFAULTS.vidsrcBaseUrl}/embed/movie?tmdb=1`,
       }));
 
       render(<StreamingResultCard content={mockMovieContent} onPlay={mockOnPlay} />);
@@ -308,7 +308,7 @@ describe('StreamingResultCard', () => {
         server2: 'https://vidsrc-embed.su/embed/tv?tmdb=2',
         server3: 'https://vidsrcme.su/embed/tv?tmdb=2',
         server4: 'https://vsrc.su/embed/tv?tmdb=2',
-        server5: `${PLAYER_DEFAULTS.videasyBaseUrl}/embed/tv?tmdb=2`,
+        server5: `${PLAYER_DEFAULTS.vidsrcBaseUrl}/embed/tv?tmdb=2`,
       }));
 
       render(<StreamingResultCard content={mockTVContent} onPlay={mockOnPlay} />);

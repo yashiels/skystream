@@ -12,9 +12,13 @@ export const TMDB_DEFAULTS = {
 };
 
 export const PLAYER_DEFAULTS = {
-  videasyBaseUrl: 'https://player.videasy.to',
-  defaultPlayer: 'videasy',
-  defaultColor: 'e50914',
+  // NEXT_PUBLIC_ so Next.js inlines it into the client bundle too — VidSrc
+  // supports CNAME'ing a custom domain (fewer ads, no-click autoplay), and
+  // swapping to it must be an env change here, not a code change.
+  vidsrcBaseUrl:
+    (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_VIDSRC_BASE_URL) ||
+    'https://vidsrcme.ru',
+  defaultPlayer: 'vidsrc',
   autoPlay: true,
   language: 'en',
 };

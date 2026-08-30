@@ -56,10 +56,9 @@ describe('shared config', () => {
       expect(TMDB_DEFAULTS.defaultBackdropSize).toBe('w1280');
     });
 
-    it('PLAYER_DEFAULTS exposes the Videasy URL and defaults', () => {
-      expect(PLAYER_DEFAULTS.videasyBaseUrl).toMatch(/videasy/);
-      expect(PLAYER_DEFAULTS.defaultPlayer).toBe('videasy');
-      expect(PLAYER_DEFAULTS.defaultColor).toBe('e50914');
+    it('PLAYER_DEFAULTS exposes the VidSrc URL and defaults', () => {
+      expect(PLAYER_DEFAULTS.vidsrcBaseUrl).toMatch(/vidsrc/);
+      expect(PLAYER_DEFAULTS.defaultPlayer).toBe('vidsrc');
     });
   });
 });
