@@ -55,3 +55,17 @@ pnpm format         # prettier --write
 - Tests live in `__tests__/` beside the code; CSS and image imports are mocked
   (see `jest.config.js`).
 - Commits: conventional format `type(scope): summary`.
+
+## CI & deploy
+
+- **CI** (`.github/workflows/ci.yml`, `"CI: PR Checks"`) runs on PRs to `main`:
+  `code-quality`, `test`, `build` in parallel, gated by the `ci-complete`
+  aggregator (the required status check). Shared setup lives in
+  `.github/actions/setup-node`.
+- **Deploy** (`.github/workflows/deploy-prod.yml`, `"Deploy: Web (prod)"`) runs on
+  push to `main`. Coolify on Launchpad is Tailscale-only, so the runner joins the
+  tailnet with an ephemeral auth key and calls Coolify's deploy API; Coolify then
+  pulls `main` and rebuilds the Dockerfile. Manual/rollback: run the workflow, or
+  `coolify deploy <uuid>` from any tailnet machine.
+- Deploy config: secrets `TS_AUTHKEY`, `COOLIFY_API_TOKEN`; vars `RUNNER`,
+  `COOLIFY_URL`, `COOLIFY_APP_UUID`.
