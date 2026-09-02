@@ -47,6 +47,6 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Build web
+      - name: Build
         if: github.event_name == 'push' || !cancelled()
-        run: pnpm build:web
+        run: pnpm build

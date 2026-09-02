@@ -1,6 +1,0 @@
-{
-  "framework": "nextjs",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm turbo build --filter=web"
-}
