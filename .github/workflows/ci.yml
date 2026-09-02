@@ -1,52 +1,67 @@
-name: CI
+name: "CI: PR Checks"
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  ci:
-    name: Lint, Test & Build
-    runs-on: ubuntu-latest
+  code-quality:
+    name: Code Quality
+    if: github.event.pull_request.draft != true
+    runs-on: ${{ vars.RUNNER }}
     timeout-minutes: 10
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
-
     steps:
       - uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
-      - name: Install pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
-
-      - name: Cache pnpm store
-        uses: actions/cache@v5
-        with:
-          path: ~/.local/share/pnpm/store/v10
-          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: pnpm-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      - uses: ./.github/actions/setup-node
+      - name: Lint
+        run: pnpm lint
       - name: Format check
         run: pnpm format:check
 
-      - name: Lint
-        run: pnpm lint
-
+  test:
+    name: Test
+    if: github.event.pull_request.draft != true
+    runs-on: ${{ vars.RUNNER }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node
       - name: Test
         run: pnpm test
 
+  build:
+    name: Build
+    if: github.event.pull_request.draft != true
+    runs-on: ${{ vars.RUNNER }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node
       - name: Build
-        if: github.event_name == 'push' || !cancelled()
         run: pnpm build
+
+  ci-complete:
+    name: ci-complete
+    needs: [code-quality, test, build]
+    if: always()
+    runs-on: ${{ vars.RUNNER }}
+    timeout-minutes: 5
+    steps:
+      - name: Assert no job failed or was cancelled
+        run: |
+          RESULTS='${{ toJSON(needs) }}'
+          echo "$RESULTS" | jq .
+          FAILED=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result == "failure" or .value.result == "cancelled") | .key')
+          if [ -n "$FAILED" ]; then
+            echo "::error::The following checks failed or were cancelled:"
+            echo "$FAILED"
+            exit 1
+          fi
+          echo "All checks passed or were legitimately skipped."
