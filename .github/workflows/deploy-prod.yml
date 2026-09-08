@@ -1,16 +1,15 @@
-# Deploys skystream to Coolify on Launchpad. Coolify is Tailscale-only
-# (100.x address), so the runner joins the tailnet with an ephemeral,
-# tag-scoped auth key before calling Coolify's deploy API. Coolify then pulls
-# main and rebuilds the Dockerfile itself — this workflow only triggers it.
+# Deploys skystream to launchpad (Hetzner, tailnet-only). The runner joins the
+# tailnet with an ephemeral tag-scoped auth key, then SSHes to launchpad and
+# builds the image on the box and (re)starts the compose stack. A cloudflared
+# sidecar (see deploy/compose.yml) serves https://skystream.yashiel.dev.
 #
-# Manual deploy / rollback: Actions -> "Deploy: Web (prod)" -> Run workflow
-# (or `coolify deploy $COOLIFY_APP_UUID` from any tailnet machine).
+# Manual deploy / rollback: Actions -> "Deploy: Web (prod)" -> Run workflow.
 #
 # Required config:
-#   secret  TS_AUTHKEY          — Tailscale ephemeral auth key, tag:ci-deploy
-#   secret  COOLIFY_API_TOKEN   — Coolify API token (Bearer)
-#   var     COOLIFY_URL         — e.g. http://100.122.178.53:8000
-#   var     COOLIFY_APP_UUID    — the skystream app uuid
+#   secret  TS_AUTHKEY                 — Tailscale ephemeral auth key, tag:ci-deploy
+#   secret  LAUNCHPAD_SSH_KEY          — ed25519 private key for yashiel@launchpad
+#   secret  NEXT_PUBLIC_TMDB_API_KEY   — public TMDB build arg (op://Agents/skystream/tmdb-api-key)
+#   var     LAUNCHPAD_HOST             — launchpad tailnet IP (100.122.178.53)
 name: "Deploy: Web (prod)"
 
 on:
@@ -31,30 +30,40 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy → production (Coolify)
+    name: Deploy → production (launchpad)
     runs-on: ${{ vars.RUNNER }}
     environment: production
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
         with:
           authkey: ${{ secrets.TS_AUTHKEY }}
           version: latest
 
-      - name: Trigger Coolify deploy
-        env:
-          COOLIFY_URL: ${{ vars.COOLIFY_URL }}
-          COOLIFY_APP_UUID: ${{ vars.COOLIFY_APP_UUID }}
-          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+      - name: SSH key
         run: |
-          code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
-            --request GET "${COOLIFY_URL}/api/v1/deploy?uuid=${COOLIFY_APP_UUID}&force=false" \
-            --header "Authorization: Bearer ${COOLIFY_API_TOKEN}")
-          echo "HTTP ${code}"
-          cat /tmp/resp; echo
-          if [ "$code" -ge 300 ]; then
-            echo "::error::Coolify deploy trigger failed (HTTP ${code})"
-            exit 1
-          fi
-          echo "Deploy queued on Coolify — it will pull main and rebuild the image."
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.LAUNCHPAD_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Sync stack + build & deploy on launchpad
+        env:
+          TMDB_KEY: ${{ secrets.NEXT_PUBLIC_TMDB_API_KEY }}
+        run: |
+          ssh_opts=(-i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new)
+          host="yashiel@${{ vars.LAUNCHPAD_HOST }}"
+          scp "${ssh_opts[@]}" deploy/compose.yml "${host}:~/apps/skystream/compose.yml"
+          ssh "${ssh_opts[@]}" "$host" TMDB_KEY="$TMDB_KEY" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd ~/apps/skystream/src/skystream
+          git fetch -q origin main && git reset -q --hard origin/main
+          DOCKER_BUILDKIT=1 docker build --build-arg NEXT_PUBLIC_TMDB_API_KEY="$TMDB_KEY" -t skystream:local .
+          cd ~/apps/skystream
+          docker compose -p skystream --env-file .env -f compose.yml up -d
+          docker image prune -f >/dev/null 2>&1 || true
+          docker compose -p skystream -f compose.yml ps
+          REMOTE
