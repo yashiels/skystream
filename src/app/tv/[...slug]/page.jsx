@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
     : `Stream ${tvShow.name} online free in HD on SkyStream. No sign-up required.`;
   const image = tvShow.poster_path
     ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}`
-    : 'https://www.sky-stream.online/LOGO.png';
+    : 'https://skystream.yashiel.dev/LOGO.png';
   const urlPath = `/tv/${slug.join('/')}`;
 
   return {
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'video.tv_show',
-      url: `https://www.sky-stream.online${urlPath}`,
+      url: `https://skystream.yashiel.dev${urlPath}`,
       images: [{ url: image }],
       siteName: 'SkyStream',
     },
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }) {
         name: tvShow.name,
         description: tvShow.overview,
         image,
-        url: `https://www.sky-stream.online${urlPath}`,
+        url: `https://skystream.yashiel.dev${urlPath}`,
         datePublished: tvShow.first_air_date,
         genre: tvShow.genres?.map(g => g.name),
         aggregateRating: tvShow.vote_average

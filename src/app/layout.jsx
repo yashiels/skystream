@@ -17,20 +17,20 @@ export const metadata = {
     'free movies,free tv shows,stream online,hd streaming,no sign up movies,skystream,watch movies online,watch tv shows online,4K movies,full HD,streaming site',
   robots: 'index, follow',
   referrer: 'origin',
-  metadataBase: new URL('https://www.sky-stream.online'),
+  metadataBase: new URL('https://skystream.yashiel.dev'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
-    url: 'https://www.sky-stream.online/',
+    url: 'https://skystream.yashiel.dev/',
     title: 'SkyStream | Free Movies & TV Shows Online - No Sign Up',
     description:
       'Watch thousands of movies and TV shows in HD, Full HD and 4K. No sign-up required.',
     siteName: 'SkyStream',
     images: [
       {
-        url: 'https://www.sky-stream.online/LOGO.png',
+        url: 'https://skystream.yashiel.dev/LOGO.png',
         width: 1200,
         height: 630,
       },
@@ -41,7 +41,7 @@ export const metadata = {
     site: '@SkyStream',
     title: 'SkyStream | Free Movies & TV Shows - No Sign Up',
     description: 'Stream free movies and TV shows in HD, Full HD and 4K. No registration needed.',
-    images: ['https://www.sky-stream.online/LOGO.png'],
+    images: ['https://skystream.yashiel.dev/LOGO.png'],
   },
   icons: {
     icon: [{ url: '/favicon.png', type: 'image/png' }, { url: '/favicon.ico' }],
@@ -67,14 +67,14 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'SkyStream',
-              url: 'https://www.sky-stream.online',
+              url: 'https://skystream.yashiel.dev',
               description:
                 'Watch free movies and TV shows online in HD, Full HD and 4K. No sign-up required.',
               potentialAction: {
                 '@type': 'SearchAction',
                 target: {
                   '@type': 'EntryPoint',
-                  urlTemplate: 'https://www.sky-stream.online/?q={search_term_string}',
+                  urlTemplate: 'https://skystream.yashiel.dev/?q={search_term_string}',
                 },
                 'query-input': 'required name=search_term_string',
               },
