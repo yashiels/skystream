@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
     : `Stream ${movie.title} online free in HD on SkyStream. No sign-up required.`;
   const image = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : 'https://www.sky-stream.online/LOGO.png';
+    : 'https://skystream.yashiel.dev/LOGO.png';
 
   return {
     title,
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'video.movie',
-      url: `https://www.sky-stream.online/movie/${slug}`,
+      url: `https://skystream.yashiel.dev/movie/${slug}`,
       images: [{ url: image }],
       siteName: 'SkyStream',
     },
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }) {
         name: movie.title,
         description: movie.overview,
         image,
-        url: `https://www.sky-stream.online/movie/${slug}`,
+        url: `https://skystream.yashiel.dev/movie/${slug}`,
         datePublished: movie.release_date,
         genre: movie.genres?.map(g => g.name),
         aggregateRating: movie.vote_average

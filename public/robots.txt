@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.sky-stream.online/sitemap.xml
+Sitemap: https://skystream.yashiel.dev/sitemap.xml
 
 # Disallow API and auth paths
 Disallow: /api/
