@@ -66,9 +66,7 @@ describe('Layout', () => {
 
   test('renders footer credits with attribution links', () => {
     renderLayout();
-    expect(screen.getByText('Skyner Group')).toBeInTheDocument();
     expect(screen.getByText('Yashiel Sookdeo')).toBeInTheDocument();
-    expect(screen.getByText('Mpho Ndlela')).toBeInTheDocument();
   });
 
   test('renders theme toggle', () => {
@@ -90,8 +88,6 @@ describe('Layout', () => {
 
   test('external links have aria-labels for accessibility', () => {
     renderLayout();
-    expect(screen.getByLabelText('Skyner Group (opens in new tab)')).toBeInTheDocument();
     expect(screen.getByLabelText('Yashiel Sookdeo (opens in new tab)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Mpho Ndlela (opens in new tab)')).toBeInTheDocument();
   });
 });

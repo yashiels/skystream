@@ -11,7 +11,7 @@
 
 import { useEffect } from 'react';
 
-const BASE_URL = 'https://www.sky-stream.online';
+const BASE_URL = 'https://skystream.yashiel.dev';
 const DEFAULT_IMAGE = `${BASE_URL}/LOGO.png`;
 const SITE_NAME = 'SkyStream';
 
