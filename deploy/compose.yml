@@ -1,0 +1,18 @@
+networks:
+  skystream:
+
+services:
+  skystream:
+    image: ${SKYSTREAM_IMAGE:-ghcr.io/yashiels/skystream:main}
+    restart: always
+    mem_limit: 1g
+    networks: [skystream]
+
+  skystream-cloudflared:
+    image: "cloudflare/cloudflared:2025.8.1"
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${SKYSTREAM_TUNNEL_TOKEN}
+    depends_on: [skystream]
+    networks: [skystream]
