@@ -94,16 +94,7 @@ const Layout = ({ children }) => {
           </p>
           <div className="layout__footer-credits">
             <p>
-              This site was made by{' '}
-              <a
-                href="https://github.com/skynergroup"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Skyner Group (opens in new tab)"
-              >
-                Skyner Group
-              </a>
-              , by devs{' '}
+              Made by{' '}
               <a
                 href="https://github.com/yashiels"
                 target="_blank"
@@ -111,18 +102,9 @@ const Layout = ({ children }) => {
                 aria-label="Yashiel Sookdeo (opens in new tab)"
               >
                 Yashiel Sookdeo
-              </a>{' '}
-              and{' '}
-              <a
-                href="https://github.com/MphoCodes"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Mpho Ndlela (opens in new tab)"
-              >
-                Mpho Ndlela
               </a>
             </p>
-            <p>© {new Date().getFullYear()} Skyner Group</p>
+            <p>© {new Date().getFullYear()} Yashiel Sookdeo</p>
           </div>
         </div>
       </footer>

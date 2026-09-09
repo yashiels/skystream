@@ -91,25 +91,16 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'SkyStream',
-              url: 'https://www.sky-stream.online',
-              logo: 'https://www.sky-stream.online/LOGO.png',
+              url: 'https://skystream.yashiel.dev',
+              logo: 'https://skystream.yashiel.dev/LOGO.png',
               founder: [
                 {
                   '@type': 'Person',
                   name: 'Yashiel Sookdeo',
                   url: 'https://github.com/yashiels',
                 },
-                {
-                  '@type': 'Person',
-                  name: 'Mpho Ndlela',
-                  url: 'https://github.com/MphoCodes',
-                },
               ],
-              sameAs: [
-                'https://github.com/skynergroup',
-                'https://github.com/yashiels',
-                'https://github.com/MphoCodes',
-              ],
+              sameAs: ['https://github.com/yashiels'],
             }),
           }}
         />
