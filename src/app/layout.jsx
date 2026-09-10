@@ -145,19 +145,6 @@ export default function RootLayout({ children }) {
             });
           `}
         </Script>
-
-        {/* Service Worker Registration */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').catch(function(err) {
-                  console.warn('SW registration failed:', err);
-                });
-              });
-            }
-          `}
-        </Script>
       </body>
     </html>
   );

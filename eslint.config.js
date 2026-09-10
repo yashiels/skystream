@@ -5,7 +5,12 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage', 'node_modules']),
+  globalIgnores(['dist', 'coverage', 'node_modules', 'public/sw.js']),
+
+  {
+    files: ['src/sw/**/*.js'],
+    languageOptions: { globals: { __VIDSRC_ORIGIN__: 'readonly' } },
+  },
 
   // Source files (browser)
   {

@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.26.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/build-sw.mjs",
     "start": "next start",
     "lint": "eslint src --report-unused-disable-directives --max-warnings 10",
     "lint:fix": "eslint src --fix",
@@ -32,11 +32,13 @@
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
     "@eslint/js": "^10.0.1",
+    "@serwist/build": "10.0.0-preview.14",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.28.2",
     "eslint": "^10.4.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -45,10 +47,14 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "serwist": "10.0.0-preview.14"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["sharp", "unrs-resolver"]
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "overrides": {
     "minimatch": "^10.0.0",

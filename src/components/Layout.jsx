@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { Home, Search } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import BackToTop from './BackToTop';
+import UpdateToast from './UpdateToast';
 import analytics from '../utils/analytics';
 import './Layout.css';
 
@@ -111,6 +112,8 @@ const Layout = ({ children }) => {
 
       {/* Back to Top Button */}
       <BackToTop threshold={300} />
+
+      <UpdateToast />
     </div>
   );
 };

@@ -1,0 +1,56 @@
+.offline-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+  padding-top: calc(2rem + env(safe-area-inset-top));
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+}
+
+.offline-page__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--netflix-red);
+  margin-bottom: 1rem;
+}
+
+.offline-page__message {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 400px;
+}
+
+.offline-page__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.offline-page__button {
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.offline-page__button--primary {
+  background: var(--netflix-red);
+  color: white;
+}
+
+.offline-page__button--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
