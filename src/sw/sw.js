@@ -1,4 +1,10 @@
-import { CacheableResponsePlugin, CacheFirst, ExpirationPlugin, NetworkOnly, Serwist } from 'serwist';
+import {
+  CacheableResponsePlugin,
+  CacheFirst,
+  ExpirationPlugin,
+  NetworkOnly,
+  Serwist,
+} from 'serwist';
 import {
   CACHEABLE_STATUSES,
   OBSOLETE_CACHE_NAMES,
@@ -53,6 +59,10 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches
       .keys()
-      .then(keys => Promise.all(keys.filter(key => OBSOLETE_CACHE_NAMES.includes(key)).map(key => caches.delete(key))))
+      .then(keys =>
+        Promise.all(
+          keys.filter(key => OBSOLETE_CACHE_NAMES.includes(key)).map(key => caches.delete(key))
+        )
+      )
   );
 });

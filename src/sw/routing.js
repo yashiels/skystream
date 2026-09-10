@@ -1,4 +1,7 @@
-export const ANALYTICS_ORIGINS = ['https://www.googletagmanager.com', 'https://www.google-analytics.com'];
+export const ANALYTICS_ORIGINS = [
+  'https://www.googletagmanager.com',
+  'https://www.google-analytics.com',
+];
 
 export const FLIGHT_HEADER_NAMES = [
   'RSC',
@@ -36,7 +39,8 @@ export const isNextFlightRequest = ({ url, headers }) => {
   const href = typeof url === 'string' ? url : url.href;
   if (href.includes('_rsc=')) return true;
 
-  const getHeader = name => (headers && typeof headers.get === 'function' ? headers.get(name) : undefined);
+  const getHeader = name =>
+    headers && typeof headers.get === 'function' ? headers.get(name) : undefined;
 
   if (FLIGHT_HEADER_NAMES.some(name => getHeader(name) != null)) return true;
 
@@ -48,7 +52,9 @@ export const isTmdbApiRequest = url => toURL(url).hostname === TMDB_API_HOSTNAME
 
 export const isTmdbImageRequest = url => {
   const parsed = toURL(url);
-  return parsed.hostname === TMDB_IMAGE_HOSTNAME && TMDB_IMAGE_PATHNAME_PATTERN.test(parsed.pathname);
+  return (
+    parsed.hostname === TMDB_IMAGE_HOSTNAME && TMDB_IMAGE_PATHNAME_PATTERN.test(parsed.pathname)
+  );
 };
 
 export const isNextStaticAsset = url => toURL(url).pathname.startsWith('/_next/static/');
@@ -58,7 +64,10 @@ export const isNextStaticAsset = url => toURL(url).pathname.startsWith('/_next/s
 // source of truth for route order, consumed both by the service worker (to
 // build its runtimeCaching config) and by tests (to prove the contract).
 export const ROUTE_ORDER = [
-  { name: 'excluded-origin', match: ({ url, vidsrcOrigin }) => isExcludedOrigin(url, vidsrcOrigin) },
+  {
+    name: 'excluded-origin',
+    match: ({ url, vidsrcOrigin }) => isExcludedOrigin(url, vidsrcOrigin),
+  },
   {
     name: 'next-flight',
     match: ({ url, request }) => isNextFlightRequest({ url, headers: request.headers }),

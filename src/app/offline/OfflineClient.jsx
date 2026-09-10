@@ -12,7 +12,11 @@ export default function OfflineClient() {
         SkyStream can&apos;t reach the network right now. Check your connection and try again.
       </p>
       <div className="offline-page__actions">
-        <button type="button" className="offline-page__button offline-page__button--primary" onClick={reloadPage}>
+        <button
+          type="button"
+          className="offline-page__button offline-page__button--primary"
+          onClick={reloadPage}
+        >
           Retry
         </button>
         <Link href="/" className="offline-page__button offline-page__button--secondary">

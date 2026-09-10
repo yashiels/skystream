@@ -20,14 +20,20 @@ const headers = entries => ({
 
 describe('isNextFlightRequest', () => {
   it('matches when the RSC header is present', () => {
-    expect(isNextFlightRequest({ url: 'https://skystream.yashiel.dev/home', headers: headers([['RSC', '1']]) })).toBe(
-      true
-    );
+    expect(
+      isNextFlightRequest({
+        url: 'https://skystream.yashiel.dev/home',
+        headers: headers([['RSC', '1']]),
+      })
+    ).toBe(true);
   });
 
   it('matches when the URL contains _rsc=', () => {
     expect(
-      isNextFlightRequest({ url: 'https://skystream.yashiel.dev/home?_rsc=abc123', headers: headers([]) })
+      isNextFlightRequest({
+        url: 'https://skystream.yashiel.dev/home?_rsc=abc123',
+        headers: headers([]),
+      })
     ).toBe(true);
   });
 
@@ -133,7 +139,9 @@ describe('isTmdbImageRequest', () => {
 
 describe('isNextStaticAsset', () => {
   it('matches files under /_next/static/', () => {
-    expect(isNextStaticAsset('https://skystream.yashiel.dev/_next/static/chunks/main.js')).toBe(true);
+    expect(isNextStaticAsset('https://skystream.yashiel.dev/_next/static/chunks/main.js')).toBe(
+      true
+    );
   });
 
   it('does not match other /_next/ paths', () => {

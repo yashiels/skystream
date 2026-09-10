@@ -14,7 +14,11 @@ const requestScenarios = [
   {
     description: 'a document navigation to the home route',
     url: 'https://skystream.yashiel.dev/home',
-    request: { mode: 'navigate', destination: 'document', headers: headers([['Accept', 'text/html']]) },
+    request: {
+      mode: 'navigate',
+      destination: 'document',
+      headers: headers([['Accept', 'text/html']]),
+    },
     expectedRoute: 'navigation',
   },
   {
@@ -50,7 +54,11 @@ const requestScenarios = [
   {
     description: 'a VidSrc iframe document',
     url: `${VIDSRC_ORIGIN}/embed/movie/1`,
-    request: { mode: 'navigate', destination: 'iframe', headers: headers([['Accept', 'text/html']]) },
+    request: {
+      mode: 'navigate',
+      destination: 'iframe',
+      headers: headers([['Accept', 'text/html']]),
+    },
     expectedRoute: 'excluded-origin',
   },
   {
@@ -74,34 +82,57 @@ const requestScenarios = [
 ];
 
 describe('routing policy end-to-end classification', () => {
-  it.each(requestScenarios)('classifies $description as $expectedRoute', ({ url, request, expectedRoute }) => {
-    const routeName = classifyRequest({ url: new URL(url), request, vidsrcOrigin: VIDSRC_ORIGIN });
-    expect(routeName).toBe(expectedRoute);
-  });
+  it.each(requestScenarios)(
+    'classifies $description as $expectedRoute',
+    ({ url, request, expectedRoute }) => {
+      const routeName = classifyRequest({
+        url: new URL(url),
+        request,
+        vidsrcOrigin: VIDSRC_ORIGIN,
+      });
+      expect(routeName).toBe(expectedRoute);
+    }
+  );
 
   it('never assigns a caching strategy to a flight/RSC request', () => {
-    const flightScenarios = requestScenarios.filter(scenario => scenario.expectedRoute === 'next-flight');
+    const flightScenarios = requestScenarios.filter(
+      scenario => scenario.expectedRoute === 'next-flight'
+    );
     expect(flightScenarios.length).toBeGreaterThan(0);
 
     for (const scenario of flightScenarios) {
-      const routeName = classifyRequest({ url: new URL(scenario.url), request: scenario.request, vidsrcOrigin: VIDSRC_ORIGIN });
+      const routeName = classifyRequest({
+        url: new URL(scenario.url),
+        request: scenario.request,
+        vidsrcOrigin: VIDSRC_ORIGIN,
+      });
       expect(CACHING_ROUTE_NAMES).not.toContain(routeName);
     }
   });
 
   it('never assigns a caching strategy to a navigation (document) request', () => {
-    const navigationScenarios = requestScenarios.filter(scenario => scenario.expectedRoute === 'navigation');
+    const navigationScenarios = requestScenarios.filter(
+      scenario => scenario.expectedRoute === 'navigation'
+    );
     expect(navigationScenarios.length).toBeGreaterThan(0);
 
     for (const scenario of navigationScenarios) {
-      const routeName = classifyRequest({ url: new URL(scenario.url), request: scenario.request, vidsrcOrigin: VIDSRC_ORIGIN });
+      const routeName = classifyRequest({
+        url: new URL(scenario.url),
+        request: scenario.request,
+        vidsrcOrigin: VIDSRC_ORIGIN,
+      });
       expect(CACHING_ROUTE_NAMES).not.toContain(routeName);
     }
   });
 
   it('only assigns caching strategies to non-HTML static and image routes', () => {
     for (const scenario of requestScenarios) {
-      const routeName = classifyRequest({ url: new URL(scenario.url), request: scenario.request, vidsrcOrigin: VIDSRC_ORIGIN });
+      const routeName = classifyRequest({
+        url: new URL(scenario.url),
+        request: scenario.request,
+        vidsrcOrigin: VIDSRC_ORIGIN,
+      });
       if (CACHING_ROUTE_NAMES.includes(routeName)) {
         expect(['next-static', 'tmdb-image']).toContain(routeName);
       }

@@ -5,7 +5,15 @@ export const extractStaticAssetUrls = html => {
   return Array.from(new Set(matches));
 };
 
-export const buildOfflinePrecacheEntries = ({ offlineUrl, offlineHtml, offlineRevision, hashAsset }) => {
-  const assetEntries = extractStaticAssetUrls(offlineHtml).map(url => ({ url, revision: hashAsset(url) }));
+export const buildOfflinePrecacheEntries = ({
+  offlineUrl,
+  offlineHtml,
+  offlineRevision,
+  hashAsset,
+}) => {
+  const assetEntries = extractStaticAssetUrls(offlineHtml).map(url => ({
+    url,
+    revision: hashAsset(url),
+  }));
   return [...assetEntries, { url: offlineUrl, revision: offlineRevision }];
 };
