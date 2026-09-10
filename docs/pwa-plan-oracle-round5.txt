@@ -1,0 +1,12 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=high · 1 files · ~3552 tok · gateway
+FINAL VERDICT: APPROVE WITH CHANGES — not implementation-ready exactly as written.
+
+The last correction is incomplete in `docs/pwa-plan.md`:
+
+- “PASS fullscreen,” “PASS rotation,” and “PASS if playback starts” lack bounded, explicit observables in several environments.
+- Lock-screen controls do not state whether recording “controls not provided” is PASS or FAIL.
+- Wake Lock, Dynamic Island/home-indicator overlap, and keyboard-open are listed without pass/fail criteria.
+- The document status still says “Oracle round 3 sign-off requested.”
+
+The iOS Safari criteria and PiP fallback semantics are substantially improved, but the remaining shorthand still permits subjective or indefinitely pending outcomes. I cannot give final approval without deterministic criteria for those cells.
+oracle_rc=0

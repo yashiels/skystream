@@ -1,0 +1,8 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=high · 1 files · ~3852 tok · gateway
+FINAL VERDICT: NOT APPROVED.
+
+- Wake Lock acquisition-failure FAIL case is present.
+- Status edit is not present: `docs/pwa-plan.md` still says **“Oracle round 5 sign-off requested.”**
+
+Additionally, confirming no regression requires the Round 6 baseline or diff. The remaining required change is the status header only.
+oracle_rc=0

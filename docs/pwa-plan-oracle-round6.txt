@@ -1,0 +1,14 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=high · 1 files · ~3960 tok · gateway
+Final verdict: NOT APPROVED as written.
+
+Verified resolved:
+- Playback observables are consistent across all four environments, including inherited Android-installed criteria.
+- Lock-screen no-provider behavior explicitly counts as PASS.
+- Dynamic Island/home-indicator and keyboard-open criteria are defined.
+
+Two remaining defects in `docs/pwa-plan.md`:
+1. Status still says “Oracle round 5 sign-off requested”; this is round 6.
+2. Wake Lock has no result for “API exists but lock acquisition fails/rejects.” Add: “FAIL if supported but the lock cannot be acquired during eligible trailer playback.”
+
+After those two textual edits, the plan is implementation-ready.
+oracle_rc=0

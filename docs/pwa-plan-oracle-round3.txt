@@ -1,0 +1,19 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=high · 1 files · ~2888 tok · gateway
+Verdict: APPROVE WITH CHANGES
+
+Four small but required corrections remain in `docs/pwa-plan.md`:
+
+1. Cache assertion is impossible as written  
+PR2 explicitly precaches `/offline` HTML, but requires proving “no page HTML … enters Cache Storage.” Change this everywhere to: “no HTML except the explicitly precached `/offline` response, and no RSC/Flight responses.”
+
+2. Update reload guard remains underspecified  
+`clientsClaim: true` can cause `controllerchange` on first installation. Specify that the reload listener is installed before posting `SKIP_WAITING` and reloads only when armed by the user accepting the update. Initial-install or unrelated `controllerchange` events must not reload.
+
+3. Required playback matrix is still not present  
+PR3 combines four environments into two bullets and lists operations rather than expected outcomes. Add an actual four-row matrix—iOS Safari, iOS standalone, Android Chrome, Android installed—with a concrete pass/fail expectation for every operation. “Each cell has a named expected outcome” merely promises that work later; it does not define it now.
+
+4. Basic consent mode is technically misstated  
+`analytics_storage: denied` does not itself mean “no pings” when gtag is loaded; that is advanced consent behavior. Basic mode requires preventing the existing gtag in `src/app/layout.jsx` from loading or executing until consent. State this explicitly and add a network-level test proving no Google script, consent ping, or analytics request occurs pre-consent. See [Google’s basic consent definition](https://developers.google.com/tag-platform/security/concepts/consent-mode).
+
+Status of the nine round-2 requirements: 2, 4, 5, 6, and 8 are resolved; 1 and 3 need precision corrections; 7 and 9 are not genuinely resolved. No architectural redesign is needed.
+oracle_rc=0

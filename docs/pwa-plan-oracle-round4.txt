@@ -1,0 +1,19 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=high · 1 files · ~3369 tok · gateway
+VERDICT: APPROVE WITH CHANGES
+
+In `docs/pwa-plan.md`, corrections 1, 2, and 4 are genuinely resolved:
+
+- Cache assertion explicitly permits only precached `/offline` HTML and forbids cached RSC/Flight.
+- Update listener is installed before `SKIP_WAITING`, armed only after acceptance, and guarded against first-install `controllerchange`.
+- gtag is blocked from loading pre-consent, with a network-level no-Google-request test.
+
+Correction 3 remains incomplete. The playback matrix uses `✓/✗` result placeholders rather than concrete pass criteria, especially for provider-dependent cases such as:
+
+- “lock-screen controls … not promised”
+- “PiP attempt → may work”
+- “PiP permitted ✓/✗”
+
+Specify deterministic outcomes, for example: “PASS if PiP starts or the documented fallback appears; FAIL if neither occurs.” Apply equivalent criteria to every operation in all four environments.
+
+No other new blocking errors found.
+oracle_rc=0
