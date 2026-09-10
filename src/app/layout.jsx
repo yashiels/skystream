@@ -44,14 +44,23 @@ export const metadata = {
     images: ['https://skystream.yashiel.dev/LOGO.png'],
   },
   icons: {
-    icon: [{ url: '/favicon.png', type: 'image/png' }, { url: '/favicon.ico' }],
-    apple: [{ url: '/favicon.png', sizes: '180x180' }],
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   manifest: '/manifest.json',
   other: {
-    'theme-color': '#0a0a0f',
     'mobile-web-app-capable': 'yes',
   },
+};
+
+export const viewport = {
+  themeColor: '#0a0a0f',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }) {
