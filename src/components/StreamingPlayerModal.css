@@ -53,6 +53,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-left: max(1.5rem, env(safe-area-inset-left));
+  padding-right: max(1.5rem, env(safe-area-inset-right));
   border-bottom: 1px solid var(--border-color);
   background: var(--input-bg);
   flex-wrap: wrap;
@@ -291,6 +294,9 @@
 
 .streaming-player-modal__footer {
   padding: 0.75rem 1.5rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  padding-left: max(1.5rem, env(safe-area-inset-left));
+  padding-right: max(1.5rem, env(safe-area-inset-right));
   border-top: 1px solid var(--border-color);
   background: var(--input-bg);
   transition:
@@ -323,7 +329,10 @@
   }
 
   .streaming-player-modal__header {
-    padding: 0.75rem 1rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: 0.75rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
@@ -372,7 +381,10 @@
   }
 
   .streaming-player-modal__footer {
-    padding: 0.625rem 1rem;
+    padding-top: 0.625rem;
+    padding-bottom: max(0.625rem, env(safe-area-inset-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   .streaming-player-modal__disclaimer {
@@ -394,7 +406,10 @@
   }
 
   .streaming-player-modal__header {
-    padding: 0.625rem 0.75rem;
+    padding-top: max(0.625rem, env(safe-area-inset-top));
+    padding-bottom: 0.625rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
   }
 
   .streaming-player-modal__title h2 {
@@ -410,7 +425,10 @@
   }
 
   .streaming-player-modal__footer {
-    padding: 0.5rem 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
   }
 }
 
