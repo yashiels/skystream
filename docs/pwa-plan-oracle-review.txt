@@ -1,0 +1,210 @@
+[oracle] cursor/openai/gpt-5.6-sol · effort=medium · 5 files · ~6700 tok · gateway
+Verdict: APPROVE WITH CHANGES
+
+1. High — Use Serwist 10+ in configurator mode
+
+Pick Serwist, using its post-`next build` configurator flow and InjectManifest-style `self.__SW_MANIFEST`.
+
+Why:
+- Designed for Next.js App Router and current Turbopack builds.
+- Generates a revisioned precache after Next has emitted routes and chunks.
+- Supplies Workbox-compatible strategies and expiration plugins without maintaining lifecycle code manually.
+- Direct Workbox InjectManifest would require custom discovery of Next build outputs.
+- Hand-rolled v2 unnecessarily retains cache revisioning, expiration, update lifecycle, and fallback risks already visible in `public/sw.js`.
+
+Do not combine a build-hash `CACHE_NAME` with revisioned precaching. Let Serwist manage precache revisions and cleanup; explicitly name/version only runtime caches.
+
+The Docker build must run:
+
+1. `next build`
+2. `serwist build`
+3. Copy the generated `public/sw.js` and Next output into the runtime image
+
+2. High — Next.js RSC requests need an explicit network-only rule
+
+“Network-first navigations” is insufficiently precise for Next.js 16. App Router Flight responses are build-specific and must not enter a general runtime cache.
+
+Before all broad routes, bypass caching for requests identified by:
+- `RSC` header
+- `Next-Router-State-Tree`
+- `Accept: text/x-component`
+- Next prefetch/Flight request forms
+
+Use:
+- Navigation documents: network with `/offline` fallback; preferably do not retain arbitrary HTML.
+- RSC/Flight and TMDB API calls: `NetworkOnly`.
+- `/_next/static/`: revisioned precache or cache-first.
+- TMDB images: bounded cache-first.
+- Everything else: network-only unless intentionally classified.
+
+This avoids stale RSC payloads referencing incompatible chunks.
+
+3. High — Update behavior needs stricter lifecycle definition
+
+The PR2 design is directionally correct, but “MessageChannel update flow” needs an exact protocol:
+
+- New worker installs and waits.
+- Client detects `registration.waiting`.
+- Toast button sends `SKIP_WAITING`.
+- Client waits for `controllerchange`.
+- Reload exactly once after controller change.
+- Activation removes only obsolete SkyStream caches, never every cache indiscriminately.
+
+Do not reload immediately after posting the message.
+
+Also serve `/sw.js` with `Cache-Control: no-cache` and register it with `updateViaCache: 'none'`. This matters behind Cloudflare. The registration currently embedded in `src/app/layout.jsx` has neither update handling nor cache control configuration.
+
+4. High — iOS version and seven-day eviction assumptions are wrong
+
+There is no consumer “iOS 19” release under Apple’s current naming. The current test target should be stated explicitly—presumably iOS/iPadOS 26 Safari and Home Screen web apps.
+
+Installed standalone Home Screen web apps are exempt from WebKit’s seven-day ITP deletion of script-writable storage. Ordinary Safari sites remain subject to it. Storage can still be removed under pressure or by the user.
+
+Replace PR3’s “accept iOS 7-day site-data eviction” with:
+- Verify standalone storage isolation.
+- Treat cache and localStorage as non-durable anyway.
+- Optionally inspect/request persistence through `navigator.storage`.
+- Test cold launch after device restart and storage pressure.
+
+5. High — Cross-origin iframe playback limits parent control
+
+In `src/components/StreamingPlayerModal.jsx`, the actual media element belongs to VidSrc’s origin. SkyStream cannot directly:
+- Set Media Session metadata or action handlers.
+- Reliably manage play/pause, seeking, PiP, or audio focus.
+- Guarantee inline playback or autoplay.
+- Correct provider behavior after WebKit changes.
+
+The iframe currently allows only:
+
+`encrypted-media; autoplay; fullscreen`
+
+Add `picture-in-picture` and, if supported by the provider/tested WebKit version, `mediasession`. This only delegates permission; it does not make VidSrc implement those features.
+
+Keep the origin-checked `postMessage` handling, but validate the complete message schema and numeric ranges rather than trusting every `PLAYER_EVENT` from the provider origin.
+
+6. High — iOS Home Screen PiP remains broken
+
+As of current WebKit releases, Picture-in-Picture can fail in installed Home Screen apps even when `document.pictureInPictureEnabled` reports true. The iframe makes capability detection even harder because SkyStream cannot inspect its video element.
+
+Required behavior:
+- Do not promise PiP for installed iOS.
+- Offer “Open in Safari” or the existing “Open in new tab” as the fallback.
+- Test native fullscreen exit, rotation, Dynamic Island, home-indicator overlap, interruptions, lock screen controls, and resume after backgrounding.
+- Do not rely on manifest `orientation`; iOS may ignore it.
+
+For first-party trailer playback, separately test:
+- `playsInline`
+- user-gesture playback
+- native HLS before hls.js fallback
+- Screen Wake Lock where available
+- backgrounding and audio interruption
+- PiP capability in Safari versus standalone mode
+
+7. Medium — Drop `window-controls-overlay`
+
+Drop it for this mobile-first target. It is desktop-only, unsupported on Android and iOS, and creates future desktop title-bar layout obligations.
+
+Use:
+
+- `display: "standalone"`
+- optionally `display_override: ["standalone"]`, though that adds little
+
+Add `window-controls-overlay` later only with a designed and tested desktop title-bar experience.
+
+8. Medium — Static offline fallback is the correct scope
+
+Use a static `/offline` page. Cached-catalog browsing is scope creep because it requires:
+- Persisting and versioning TMDB data
+- Expiration semantics
+- Offline image behavior
+- Empty/stale-state UX
+- Storage budgeting and privacy decisions
+- Clear messaging that playback remains unavailable
+
+A polished offline page with retry and cached shell assets provides the right value for an online-first streaming application.
+
+Ensure `/offline` is statically renderable and included in the precache. Its required CSS, fonts, and chunks must also be available offline.
+
+9. Medium — TMDB image policy needs tighter bounds
+
+Entry count alone is not enough because poster/backdrop sizes vary significantly. Use both:
+- `maxEntries`
+- `maxAgeSeconds`
+
+Cache only the expected TMDB image host and pathname pattern. Accept opaque responses explicitly with cacheable statuses `[0, 200]`. Do not create a generic cross-origin image rule.
+
+Place explicit network-only exclusions for Google Analytics and VidSrc before this route.
+
+10. Medium — PR boundaries are not independently deployable as written
+
+Required reordering:
+
+PR1:
+- All real icons, including the 180px Apple icon
+- Manifest identity and install fields
+- `viewportFit: "cover"`
+- Baseline shell safe-area handling
+- Validate Search `/` and Discover `/home` shortcut URLs
+
+PR2:
+- Static offline route
+- Serwist build integration and Docker changes
+- Runtime policies
+- Waiting-worker toast and activation protocol
+- Cloudflare/SW response headers
+- Migration cleanup for `skystream-v1`
+- RSC/Flight exclusions
+
+PR3:
+- iOS playback, standalone, storage, safe-area and A2HS testing
+- Targeted CSS fixes discovered by testing
+
+PR4:
+- Android install UX and screenshots
+- `beforeinstallprompt`
+- Analytics and docs
+- Automated installability/mobile tests
+
+The Apple icon is duplicated between PR1 and PR3; keep it entirely in PR1. The update toast must ship with PR2, otherwise PR2 can leave a waiting worker with no activation UI.
+
+11. Medium — “Audit 53 CSS files” is not a useful acceptance criterion
+
+Safe areas should normally be applied at layout boundaries, fixed headers/footers, fullscreen dialogs, and floating controls—not indiscriminately in every component stylesheet.
+
+Start with:
+- `src/components/Layout.css`
+- `src/components/StreamingPlayerModal.css`
+- global/body background and overscroll styling
+- fixed-position buttons such as BackToTop
+- any trailer fullscreen controls
+
+Test portrait, landscape, keyboard-open, fullscreen transitions, and standalone mode.
+
+12. Low — Manifest fields are partly platform-specific
+
+`launch_handler`, shortcuts, screenshots, and rich install UI are mostly Chromium enhancements; Safari may ignore them. Keep them only when valid and tested—they are harmless progressive enhancement.
+
+Use a stable `id`, likely `/`, and never change it casually after users install. Supply screenshot `sizes`, `type`, and `form_factor`. Ensure maskable icons have real safe-zone padding rather than merely labeling the regular icon maskable.
+
+13. Low — Replace “Lighthouse PWA pass”
+
+Lighthouse removed its dedicated PWA category. Replace this acceptance criterion with:
+- Chrome DevTools manifest/installability validation
+- Production HTTPS installation test
+- `beforeinstallprompt` test after engagement criteria
+- Offline reload test
+- Worker upgrade across two deployed builds
+- Lighthouse performance/accessibility/best-practices checks
+
+Missing scope
+
+- Dockerfile/build-script and Cloudflare cache-rule changes.
+- `sw.js` response headers and CSP implications.
+- Next.js RSC/Flight exclusion tests.
+- Two-version worker upgrade test, including an open playback modal.
+- VidSrc behavior in installed iOS mode, including fullscreen, PiP fallback, backgrounding, and Media Session ownership.
+- Trailer-specific native HLS/hls.js test matrix.
+- Manifest screenshot/icon validation and maskable safe-zone checks.
+- Consent-aware install analytics: `src/app/layout.jsx` defaults analytics storage to denied, so install events may intentionally not be transmitted.
+- Provider failure UX when VidSrc is offline, blocked, or refuses iframe embedding.
+oracle_rc=0
