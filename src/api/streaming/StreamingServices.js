@@ -1,7 +1,7 @@
 /**
  * Streaming Services API
  * Handles embed URL generation for the VidSrc player
- * Docs: https://vidsrcme.ru/vidsrc/docs/
+ * Docs: https://vidsrc.sh/
  */
 
 import { PLAYER_DEFAULTS } from '@/shared';

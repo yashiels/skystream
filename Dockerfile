@@ -29,7 +29,7 @@ COPY . .
 # mirror .env.production so an image built without them still works.
 ARG NEXT_PUBLIC_TMDB_API_KEY=""
 ARG NEXT_PUBLIC_TMDB_BASE_URL="https://api.themoviedb.org/3"
-ARG NEXT_PUBLIC_VIDSRC_BASE_URL="https://vidsrcme.ru"
+ARG NEXT_PUBLIC_VIDSRC_BASE_URL="https://vidsrc.sh"
 ARG NEXT_PUBLIC_GA_TRACKING_ID="G-CR3ZVV9BE1"
 ARG NEXT_PUBLIC_APP_VERSION="2.0.0"
 ENV NEXT_PUBLIC_TMDB_API_KEY=${NEXT_PUBLIC_TMDB_API_KEY} \
