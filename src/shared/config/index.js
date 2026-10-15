@@ -17,7 +17,7 @@ export const PLAYER_DEFAULTS = {
   // swapping to it must be an env change here, not a code change.
   vidsrcBaseUrl:
     (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_VIDSRC_BASE_URL) ||
-    'https://vidsrcme.ru',
+    'https://vidsrc.sh',
   defaultPlayer: 'vidsrc',
   autoPlay: true,
   language: 'en',

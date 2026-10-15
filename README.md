@@ -128,4 +128,4 @@ argument; on Coolify set the TMDB key as a **build-time** variable.
 MIT — see [LICENSE](LICENSE).
 
 Powered by [TMDB](https://www.themoviedb.org/) and
-[VidSrc](https://vidsrcme.ru/).
+[VidSrc](https://vidsrc.sh/).
