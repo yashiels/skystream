@@ -7,8 +7,8 @@ Guidance for AI coding agents working in this repo. Humans: see
 
 SkyStream is a single Next.js 16 web app — nothing else. It browses movies, TV,
 and anime via the TMDB API and plays them through the VidSrc embed. It is
-deployed as a Docker container on Coolify and served at
-`skystream.yashiel.dev`. There is no mobile app, no monorepo, and no backend of
+deployed as a Docker container on launchpad (plain Docker + Compose, no
+Coolify) and served at `skystream.yashiel.dev` through a cloudflared tunnel. There is no mobile app, no monorepo, and no backend of
 its own.
 
 ## Stack
@@ -63,9 +63,12 @@ pnpm format         # prettier --write
   aggregator (the required status check). Shared setup lives in
   `.github/actions/setup-node`.
 - **Deploy** (`.github/workflows/deploy-prod.yml`, `"Deploy: Web (prod)"`) runs on
-  push to `main`. Coolify on Launchpad is Tailscale-only, so the runner joins the
-  tailnet with an ephemeral auth key and calls Coolify's deploy API; Coolify then
-  pulls `main` and rebuilds the Dockerfile. Manual/rollback: run the workflow, or
-  `coolify deploy <uuid>` from any tailnet machine.
-- Deploy config: secrets `TS_AUTHKEY`, `COOLIFY_API_TOKEN`; vars `RUNNER`,
-  `COOLIFY_URL`, `COOLIFY_APP_UUID`.
+  push to `main` (markdown, `.github/**` and `LICENSE` changes are ignored).
+  launchpad is tailnet-only, so the runner joins the tailnet with an ephemeral
+  auth key, copies `deploy/compose.yml` to the box, and over SSH resets the
+  on-box clone to `origin/main`, builds `skystream:local` from the Dockerfile and
+  runs `docker compose up -d`. A cloudflared sidecar serves the site. Manual
+  deploy/rollback: run the workflow from the Actions tab. Details in
+  [`deploy/README.md`](deploy/README.md).
+- Deploy config: secrets `TS_AUTHKEY_CI`, `LAUNCHPAD_SSH_KEY`,
+  `NEXT_PUBLIC_TMDB_API_KEY`; vars `RUNNER`, `LAUNCHPAD_HOST`.

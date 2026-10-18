@@ -1,6 +1,7 @@
-# SkyStream — container image for self-hosted deploys (Coolify on Launchpad).
+# SkyStream — container image built on launchpad by .github/workflows/deploy-prod.yml
+# and run by deploy/compose.yml (see deploy/README.md).
 #
-#   docker build --build-arg NEXT_PUBLIC_TMDB_API_KEY=<key> -t skystream .
+#   docker build --build-arg NEXT_PUBLIC_TMDB_API_KEY=<key> -t skystream:local .
 #
 # NEXT_PUBLIC_* values are inlined by Next.js at build time, so the TMDB key is
 # a build argument, not a runtime variable. It is public by design — the browser
