@@ -7,7 +7,7 @@
 # a build argument, not a runtime variable. It is public by design — the browser
 # calls TMDB directly with it. See .env.example for the full contract.
 
-ARG NODE_VERSION=22-alpine
+ARG NODE_VERSION=22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914
 ARG PNPM_VERSION=10.26.0
 
 # --- Stage 1: install dependencies ------------------------------------------

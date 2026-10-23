@@ -61,7 +61,7 @@ jobs:
           set -euo pipefail
           cd ~/apps/skystream/src/skystream
           git fetch -q origin main && git reset -q --hard origin/main
-          DOCKER_BUILDKIT=1 docker build --build-arg NEXT_PUBLIC_TMDB_API_KEY="$TMDB_KEY" -t skystream:local .
+          DOCKER_BUILDKIT=1 docker build --pull --build-arg NEXT_PUBLIC_TMDB_API_KEY="$TMDB_KEY" -t skystream:local .
           cd ~/apps/skystream
           docker compose -p skystream --env-file .env -f compose.yml up -d
           docker image prune -f >/dev/null 2>&1 || true
