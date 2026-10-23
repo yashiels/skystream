@@ -11,6 +11,7 @@ const nextConfig = {
   // the traced runtime deps, so the image doesn't carry dev dependencies.
   // See Dockerfile.
   output: 'standalone',
+  poweredByHeader: false,
   // Inline public env vars at build time with sensible defaults.
   env: {
     NEXT_PUBLIC_TMDB_API_KEY: process.env.NEXT_PUBLIC_TMDB_API_KEY || '',
