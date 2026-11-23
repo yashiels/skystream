@@ -37,7 +37,8 @@ The clone lives at `~/apps/skystream/src/skystream`; `deploy/compose.yml` is syn
 
 | Where | Name | Purpose |
 |---|---|---|
-| repo secret | `TS_AUTHKEY_CI` | ephemeral tailnet auth key (`tag:ci`) |
+| repo secret | `TS_OIDC_CLIENT_ID` | Tailscale federated identity (GitHub OIDC, `tag:ci`, from skyner-terraform) |
+| repo secret | `TS_OIDC_AUDIENCE` | its audience |
 | repo secret | `LAUNCHPAD_SSH_KEY` | ed25519 deploy key for `yashiel@launchpad` |
 | repo secret | `NEXT_PUBLIC_TMDB_API_KEY` | public TMDB build arg (also `op://Agents/skystream/tmdb-api-key`) |
 | repo var | `LAUNCHPAD_HOST` | `100.122.178.53` |

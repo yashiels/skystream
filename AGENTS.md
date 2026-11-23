@@ -70,5 +70,5 @@ pnpm format         # prettier --write
   runs `docker compose up -d`. A cloudflared sidecar serves the site. Manual
   deploy/rollback: run the workflow from the Actions tab. Details in
   [`deploy/README.md`](deploy/README.md).
-- Deploy config: secrets `TS_AUTHKEY_CI`, `LAUNCHPAD_SSH_KEY`,
+- Deploy config: secrets `TS_OIDC_CLIENT_ID`, `TS_OIDC_AUDIENCE`, `LAUNCHPAD_SSH_KEY`,
   `NEXT_PUBLIC_TMDB_API_KEY`; vars `RUNNER`, `LAUNCHPAD_HOST`.

@@ -1,12 +1,13 @@
 # Deploys skystream to launchpad (Hetzner, tailnet-only). The runner joins the
-# tailnet with an ephemeral tag-scoped auth key, then SSHes to launchpad and
+# tailnet as an ephemeral tag:ci node via GitHub OIDC, then SSHes to launchpad and
 # builds the image on the box and (re)starts the compose stack. A cloudflared
 # sidecar (see deploy/compose.yml) serves https://skystream.yashiel.dev.
 #
 # Manual deploy / rollback: Actions -> "Deploy: Web (prod)" -> Run workflow.
 #
 # Required config:
-#   secret  TS_AUTHKEY_CI               — Tailscale ephemeral auth key, tag:ci
+#   secret  TS_OIDC_CLIENT_ID          — Tailscale federated identity (skyner-terraform)
+#   secret  TS_OIDC_AUDIENCE           — its audience
 #   secret  LAUNCHPAD_SSH_KEY          — ed25519 private key for yashiel@launchpad
 #   secret  NEXT_PUBLIC_TMDB_API_KEY   — public TMDB build arg (op://Agents/skystream/tmdb-api-key)
 #   var     LAUNCHPAD_HOST             — launchpad tailnet IP (100.122.178.53)
@@ -23,6 +24,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: deploy-skystream-prod
@@ -39,9 +41,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Connect to Tailscale
-        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
+        uses: tailscale/github-action@064b10558093f38325e838ddea35486bdc6b1d5c # v4.4.0
         with:
-          authkey: ${{ secrets.TS_AUTHKEY_CI }}
+          oauth-client-id: ${{ secrets.TS_OIDC_CLIENT_ID }}
+          audience: ${{ secrets.TS_OIDC_AUDIENCE }}
+          tags: tag:ci
           version: latest
 
       - name: SSH key
